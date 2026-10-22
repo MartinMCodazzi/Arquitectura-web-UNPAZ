@@ -173,4 +173,39 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - Run `vendor/bin/pest` to call the test runner directly. It accepts the same file path and `--filter=testName` arguments.
 - After the feature tests pass, ask the user to run the complete suite with `php artisan test --compact`.
 
+=== project rules ===
+
+# Regla persistente: ADR en docs/adr/ + bitácora en DECISIONES_DISENO.txt
+
+REGLA PERSISTENTE: toda decisión técnica relevante (modelado de datos, librerías, patrones de diseño, estrategias de caché, filtros, SEO) DEBE registrarse como un nuevo archivo `.md` dentro de `docs/adr/` con formato correlativo (`0001-nombre-decision.md`) y actualizarse en el índice `docs/adr/README.md`.
+
+Cada ADR usa la plantilla estricta:
+
+```markdown
+# ADR-XXXX: [Título corto de la decisión]
+
+* **Estado:** [Propuesto | Aceptado | Reemplazado]
+* **Fecha:** YYYY-MM-DD
+* **Autor:** [Nombre / OpenCode Agent]
+
+## Contexto
+
+## Decisión
+
+## Consecuencias
+
+### Positivas
+
+### Limitaciones / Riesgos
+```
+
+Reglas complementarias:
+- Los ADR son append-only en su numeración: si una decisión cambia, el ADR anterior se marca como `Reemplazado` y se crea uno nuevo que lo referencia. No se edita un ADR ya aceptado.
+- `docs/adr/README.md` se actualiza en el mismo commit en que se agrega un ADR.
+- `DECISIONES_DISENO.txt` (raíz del repositorio) es la **bitácora de sesión** —qué se hizo en cada tarea— y no la fuente de verdad de las decisiones técnicas. También se mantiene append-only.
+
+El registro canónico de estas reglas vive en `.ai/rules/general.md` (esa carpeta es la fuente de verdad de reglas del proyecto y no se regenera). `AGENTS.md` puede ser reescrito por `boost:install`, por eso las reglas se replican aquí.
+
+Consultar además la sección 0 de `DECISIONES_DISENO.txt` para las reglas derivadas aplicables a este repositorio (precios en céntimos ARS, locale es_AR, carrito en sesión, eager loading obligatorio, etc.).
+
 </laravel-boost-guidelines>
