@@ -2,6 +2,11 @@
 
 @props(['product'])
 
+{{-- Card reutilizable del catálogo: los dos consumidores son el listado del
+     catálogo y los productos relacionados de la ficha. `product` es un
+     `ProductSummary` (listado, ADR-0015) o un modelo `Product` (ficha): los
+     dos exponen los mismos atributos públicos usados acá. --}}
+
 <article class="group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition hover:shadow-md dark:border-gray-700 dark:bg-gray-800">
     <a href="{{ route('productos.show', $product->slug) }}" class="flex aspect-square items-center justify-center overflow-hidden bg-gray-100 dark:bg-gray-700">
         @if ($product->image_url)
@@ -39,29 +44,15 @@
         </h3>
 
         <div class="mt-auto flex items-center justify-between pt-2">
-            <span class="text-lg font-bold text-gray-900 dark:text-gray-100">
-                {{ $product->formatted_price }}
-            </span>
-
-            @if ($product->is_in_stock)
-                <span class="text-xs font-medium text-green-600 dark:text-green-400">Disponible</span>
-            @else
-                <span class="text-xs font-medium text-red-600 dark:text-red-400">Sin stock</span>
-            @endif
+            <x-store.price :cents="$product->price" class="text-lg font-bold text-gray-900 dark:text-gray-100" />
+            <x-store.stock-badge :in-stock="$product->is_in_stock" :stock="$product->stock" />
         </div>
 
         @if ($product->is_in_stock)
-            <form method="POST" action="{{ route('carrito.agregar') }}">
-                @csrf
-
-                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                <input type="hidden" name="quantity" value="1">
-
-                <button type="submit"
-                        class="mt-3 w-full rounded-md border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700">
-                    Agregar al carrito
-                </button>
-            </form>
+            <livewire:cart.add-to-cart-button
+                :product-id="$product->id"
+                :stock="$product->stock"
+                :key="'card-producto-'.$product->id" />
         @endif
     </div>
 </article>

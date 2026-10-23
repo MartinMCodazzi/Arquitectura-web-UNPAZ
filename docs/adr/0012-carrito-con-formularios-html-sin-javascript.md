@@ -1,6 +1,6 @@
 # ADR-0012: El carrito se manipula con formularios HTML contra endpoints HTTP
 
-* **Estado:** Aceptado
+* **Estado:** Reemplazado (por [ADR-0017](0017-carrito-reactivo-con-livewire-y-fallback-http.md))
 * **Fecha:** 2026-10-22
 * **Autor:** OpenCode Agent
 

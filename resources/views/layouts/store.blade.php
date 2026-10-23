@@ -43,8 +43,9 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- El sitio público se renderiza entero en servidor y funciona sin
-             JavaScript (ADR-0011 y ADR-0012): acá sólo se carga el CSS. -->
+        {{-- El sitio público no carga resources/js/app.js (ADR-0016): la
+             reactividad la aporta Livewire con sus propios assets, que se
+             cargan al cierre del body con @livewireScripts. --}}
         @vite(['resources/css/app.css'])
     </head>
     <body class="font-sans antialiased">
@@ -66,16 +67,10 @@
                         </div>
 
                         <div class="flex items-center gap-4">
-                            <a href="{{ route('carrito.index') }}"
-                               class="relative flex items-center gap-2 text-sm font-medium {{ request()->routeIs('carrito.*') ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300' }}">
-                                <span>Carrito</span>
-
-                                @if ($cartCount > 0)
-                                    <span class="inline-flex min-w-5 items-center justify-center rounded-full bg-indigo-600 px-1.5 py-0.5 text-xs font-semibold text-white">
-                                        {{ $cartCount }}
-                                    </span>
-                                @endif
-                            </a>
+                            {{-- Contador de carrito reactivo (ADR-0017): se
+                                 refresca al instante con el evento
+                                 `carrito-actualizado`. --}}
+                            <livewire:cart.cart-counter />
 
                             <a href="{{ route('productos.index') }}" class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
                                 Iniciar sesión
@@ -89,24 +84,15 @@
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
                     <div class="space-y-2">
                         @if (session('success'))
-                            <div role="status"
-                                 class="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800 dark:border-green-900 dark:bg-green-900/40 dark:text-green-200">
-                                {{ session('success') }}
-                            </div>
+                            <x-store.alert type="success" wire:key="flash-success">{{ session('success') }}</x-store.alert>
                         @endif
 
                         @if (session('warning'))
-                            <div role="status"
-                                 class="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800 dark:border-yellow-900 dark:bg-yellow-900/40 dark:text-yellow-200">
-                                {{ session('warning') }}
-                            </div>
+                            <x-store.alert type="warning" wire:key="flash-warning">{{ session('warning') }}</x-store.alert>
                         @endif
 
                         @if (session('error'))
-                            <div role="alert"
-                                 class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-900/40 dark:text-red-200">
-                                {{ session('error') }}
-                            </div>
+                            <x-store.alert type="error" wire:key="flash-error">{{ session('error') }}</x-store.alert>
                         @endif
                     </div>
                 </div>
@@ -124,5 +110,7 @@
                 </div>
             </footer>
         </div>
+
+        @livewireScripts
     </body>
 </html>

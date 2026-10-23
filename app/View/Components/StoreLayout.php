@@ -2,7 +2,6 @@
 
 namespace App\View\Components;
 
-use App\Services\CartService;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
@@ -68,8 +67,8 @@ class StoreLayout extends Component
      */
     public function render(): View
     {
-        return view('layouts.store', [
-            'cartCount' => app(CartService::class)->count(),
-        ]);
+        // El contador del carrito es un componente Livewire (ADR-0017): el
+        // layout no calcula estado de carrito por su cuenta.
+        return view('layouts.store');
     }
 }

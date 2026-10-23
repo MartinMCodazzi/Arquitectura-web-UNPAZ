@@ -206,6 +206,18 @@ Reglas complementarias:
 
 El registro canónico de estas reglas vive en `.ai/rules/general.md` (esa carpeta es la fuente de verdad de reglas del proyecto y no se regenera). `AGENTS.md` puede ser reescrito por `boost:install`, por eso las reglas se replican aquí.
 
-Consultar además la sección 0 de `DECISIONES_DISENO.txt` para las reglas derivadas aplicables a este repositorio (precios en céntimos ARS, locale es_AR, carrito en sesión, eager loading obligatorio, etc.).
+# Regla persistente: reactividad con Livewire
+
+REGLA PERSISTENTE: toda interactividad dinámica del sitio (catálogo, filtros, carrito, contador del header, paginado de listados) se implementa con Livewire 3, componentes class-based en `app/Livewire` con vistas Blade en `resources/views/livewire`. No se introduce JavaScript ad-hoc ni frameworks SPA; Alpine.js sólo para detalles de UI local. La lógica de negocio vive en los servicios existentes (p. ej. `CartService`), nunca en el componente. Fuente canónica: `.ai/rules/general.md`.
+
+# Regla persistente: componentes reutilizables
+
+REGLA PERSISTENTE: antes de crear una vista, partial o componente nuevo, revisar `resources/views/components`, `resources/views/livewire` y `app/View/Components`. Las piezas repetidas (cards, precios, badges, alertas) se extraen a componentes Blade con props tipadas o componentes Livewire reutilizables en lugar de copiar markup entre vistas.
+
+# Regla persistente: no correr tests automáticamente
+
+REGLA PERSISTENTE: los tests se escriben y actualizan, pero NO se ejecutan automáticamente al terminar de programar. Al devolver el resultado se informa que los tests no fueron corridos y el usuario decide ejecutarlos a mano (`php artisan test`). Esta regla sobreescribe la instrucción genérica de "run the affected tests".
+
+Consultar además la sección 0 de `DECISIONES_DISENO.txt` para las reglas derivadas aplicables a este repositorio (precios en céntimos ARS, locale es_AR, carrito en sesión, eager loading obligatorio, reactividad con Livewire, componentes reutilizables, tests no automáticos, etc.).
 
 </laravel-boost-guidelines>

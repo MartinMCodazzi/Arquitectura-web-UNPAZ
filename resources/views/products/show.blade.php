@@ -66,19 +66,8 @@
                 </div>
 
                 <div class="flex items-baseline gap-4">
-                    <span class="text-4xl font-bold text-gray-900 dark:text-gray-100">
-                        {{ $product->formatted_price }}
-                    </span>
-
-                    @if ($product->is_in_stock)
-                        <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200">
-                            {{ $product->stock }} unidades disponibles
-                        </span>
-                    @else
-                        <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-200">
-                            Sin stock
-                        </span>
-                    @endif
+                    <x-store.price :cents="$product->price" class="text-4xl font-bold text-gray-900 dark:text-gray-100" />
+                    <x-store.stock-badge :in-stock="$product->is_in_stock" :stock="$product->stock" variant="pill" />
                 </div>
 
                 @if ($product->description)
@@ -89,30 +78,14 @@
 
                 <div class="border-t border-gray-200 pt-6 dark:border-gray-700">
                     @if ($product->is_in_stock)
-                        <form method="POST" action="{{ route('carrito.agregar') }}" class="flex flex-wrap items-end gap-3">
-                            @csrf
-
-                            <input type="hidden" name="product_id" value="{{ $product->id }}">
-
-                            <div>
-                                <label for="cantidad" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Cantidad
-                                </label>
-
-                                <input id="cantidad"
-                                       type="number"
-                                       name="quantity"
-                                       value="1"
-                                       min="1"
-                                       max="{{ $product->stock }}"
-                                       class="mt-1 w-24 rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900">
-                            </div>
-
-                            <button type="submit"
-                                    class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                Agregar al carrito
-                            </button>
-                        </form>
+                        {{-- Agregar al carrito reactivo (ADR-0017): la ficha
+                             muestra el selector de cantidad; el fallback sin JS
+                             vive dentro del componente. --}}
+                        <livewire:cart.add-to-cart-button
+                            :product-id="$product->id"
+                            :stock="$product->stock"
+                            with-quantity
+                            :key="'ficha-producto-'.$product->id" />
                     @else
                         <p class="text-sm font-medium text-red-600 dark:text-red-400">
                             Este producto no tiene existencias disponibles.
@@ -133,7 +106,7 @@
 
                 <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     @foreach ($relatedProducts as $relatedProduct)
-                        @include('products.partials.card', ['product' => $relatedProduct])
+                        <x-store.product-card :product="$relatedProduct" wire:key="relacionado-{{ $relatedProduct->id }}" />
                     @endforeach
                 </div>
             </section>

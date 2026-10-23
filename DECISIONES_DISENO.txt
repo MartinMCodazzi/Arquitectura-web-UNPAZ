@@ -9,7 +9,7 @@ Formato     : Texto plano append-only. Una sección por sesión/tarea.
 Rol         : BITÁCORA DE SESIÓN (qué se hizo en cada tarea).
               La fuente de verdad de las decisiones técnicas es el directorio
               docs/adr/ (ver ADR-0001 y docs/adr/README.md).
-Última act. : 2026-10-22
+Última act. : 2026-10-23
 
 
 ================================================================================
@@ -58,6 +58,20 @@ REGLAS DERIVADAS (aplican a este repositorio concreto):
       aprobación del usuario.
   R10. Todo paquete/patrón nuevo se documenta en docs/adr/ (ADR nuevo) y se
       resume aquí en la misma tarea en que se introduce.
+  R11. Toda interactividad dinámica del sitio (catálogo, filtros, carrito,
+      contador del header, paginado de listados) se implementa con Livewire 3:
+      componentes class-based en app/Livewire, vistas en
+      resources/views/livewire, lógica delegada en los servicios existentes
+      (ver ADR-0016). Sin JavaScript ad-hoc ni SPA; Alpine sólo para detalles
+      de UI local.
+  R12. Antes de crear una vista, partial o componente nuevo se revisan los
+      componentes existentes; las piezas repetidas (cards, precios, badges,
+      alertas) se extraen a componentes Blade reutilizables con props tipadas
+      en resources/views/components/store/ (ver ADR-0016).
+  R13. Los tests se escriben y actualizan como parte de la tarea, pero NO se
+      corren automáticamente al terminar de programar: al devolver el
+      resultado se avisa al usuario, que decide ejecutarlos a mano
+      (php artisan test). Sólo se corren tests bajo petición explícita.
 
 
 ================================================================================
@@ -726,3 +740,76 @@ Pendiente:
 ADR: sin ADR nuevo (tarea de verificación y cierre). Las decisiones de la
 Tarea 5 están en los ADR 0014 y 0015, y las decisiones vigentes del proyecto
 son las de los ADR 0001 a 0015 (docs/adr/README.md)
+
+
+--------------------------------------------------------------------------------
+## Sesión 2026-10-23 — Tarea 7: reactividad del sitio con Livewire
+--------------------------------------------------------------------------------
+Contexto:
+  Se pidió usar reactividad en la web entera y components reutilizables al
+  armar el frontend, con Livewire como tecnología de reactividad. El sitio
+  público era 100 % server-rendered sin JavaScript (ADRs 0011 y 0012): filtros
+  por redirect canónico y carrito con formularios HTML, lo que hacía cada
+  acción un round-trip completo.
+
+Decisión:
+  - Se introduce Livewire 3 como capa de reactividad (ADR-0016), sin
+    dependencias nuevas: componentes class-based en app/Livewire con vistas en
+    resources/views/livewire, delegando la lógica en los servicios existentes
+    (CartService, CatalogService, CatalogCache). El layout público carga
+    @livewireScripts; Livewire gestiona sus propios assets.
+  - Carrito reactivo (ADR-0017, reemplaza al ADR-0012, que queda Reemplazado):
+    CartCounter en el header (evento carrito-actualizado), AddToCartButton en
+    card y ficha, y CartSummary para la página del carrito (cantidades con
+    wire:model.live.debounce, quitar, vaciar, totales). Todos escriben por
+    CartService; los endpoints HTTP de CartController se conservan como
+    fallback <noscript> para el modo sin JavaScript.
+  - Catálogo reactivo: componente App\Livewire\Catalog\Catalogo con filtros en
+    `#[Url]` (categoria, buscar, precio_min, precio_max, orden, solo_stock en
+    céntimos canónicos) y WithPagination, de modo que la query string sigue
+    siendo compartible e indexable (ADR-0006/0011). El redirect canónico del
+    formulario de precios en pesos (ADR-0011) sigue vigente para el flujo sin
+    JS. La obtención de la página del listado se extrae a
+    App\Services\CatalogService, compartida por el controlador y el
+    componente, reutilizando CatalogCache y ProductSummary (ADR-0015).
+  - Componentes Blade reutilizables en resources/views/components/store/:
+    price (precio en céntimos → ARS), stock-badge, alert y product-card, que
+    absorbe el partial products/partials/card.blade.php (eliminado). El layout
+    público usa el componente alert para los mensajes flash, dejando de
+    duplicar los estilos, y delega el contador del carrito a Livewire
+    (StoreLayout deja de calcular cartCount).
+  - Objetos de dominio serializables, nunca modelos Eloquent colgando en
+    propiedades públicas: ProductSummary y CartLine se instancian dentro del
+    componente; Product se resuelve por id en las acciones.
+  - Paginación del catálogo con vista propia (resources/views/pagination
+    .../catalogo.blade.php): anchors href con query string y wire:click.prevent
+    de gotoPage, para que funcione con y sin JavaScript.
+
+Motivación técnica:
+  - Livewire mantiene el estado en servidor (sesión PHP): la reactividad no
+    introduce una segunda fuente de verdad, y las reglas de dominio (precios
+    en céntimos, eager loading, caché) se reaprovechan tal cual.
+  - Evitar modelos Eloquent en props públicas de Livewire: la serialización
+    de snapshots trabaja con datos planos y los DTOs ya son serializables
+    (ADR-0010).
+  - los endpoints HTTP se conservan porque la suite garantiza el modo sin
+    JavaScript y el costo de mantenerlos es nulo (mismo backend).
+
+Alternativas descartadas:
+  - Inertia/SPA: runtime frontend nuevo y lógica duplicada para una tienda
+    pequeña.
+  - JavaScript ad-hoc con fetch contra los endpoints: duplicación de estado y
+    validación en el cliente.
+  - Volt (componentes single-file): no hay precedente en el repo y complica
+    tests; se mantiene la convención class-based de Breeze.
+  - Migrar el formulario de filtros 100 % a Livewire sin query string:
+    rompería ADR-0006 y 0011 (indexabilidad y URLs compartibles).
+
+Estado verificado:
+  - Pint aplicado a los archivos modificados; npm run build ejecutado
+    (Tailwind escanea las vistas nuevas).
+  - Tests: suite actualizada (RenderizadoEnServidorTest reescrito para el
+    nuevo modelo y tests nuevos de Livewire). NO se corrieron automáticamente:
+    quedan a cargo del usuario (php artisan test), según regla R13.
+
+ADR: docs/adr/0016, docs/adr/0017 (0012 queda Reemplazado)

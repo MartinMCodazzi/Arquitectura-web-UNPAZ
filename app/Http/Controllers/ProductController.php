@@ -9,9 +9,7 @@ use App\Support\CatalogCache;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Collection;
 
 class ProductController extends Controller
 {
@@ -23,12 +21,11 @@ class ProductController extends Controller
     /**
      * Catálogo público con filtros aplicados desde la query string.
      *
-     * El listado se renderiza siempre en servidor: los filtros viajan en la
-     * URL para que cada combinación sea indexable y cacheable (ADR-0006).
-     *
-     * El resultado se guarda en la caché del catálogo como datos planos y se
-     * rehidrata en `ProductSummary` (ADR-0010): la vista nunca ve un modelo
-     * Eloquent en el listado.
+     * Desde ADR-0016 (reactividad con Livewire) el listado en sí lo renderiza
+     * el componente `App\Livewire\Catalog\Catalogo`, que consume el mismo
+     * CatalogService que este controlador. Acá quedan las responsabilidades
+     * de página: el redirect canónico del formulario de filtros (ADR-0011) y
+     * los metadatos SEO del `<head>` (ADR-0014).
      */
     public function index(Request $request): View|RedirectResponse
     {
@@ -40,26 +37,12 @@ class ProductController extends Controller
         }
 
         $filters = ProductFilters::fromRequest($request);
-
-        $perPage = (int) config('store.products_per_page');
         $page = Paginator::resolveCurrentPage();
-
-        [$summaries, $total] = $this->summaries($filters, $page, $perPage);
-
-        $products = new LengthAwarePaginator(
-            $summaries,
-            $total,
-            $perPage,
-            $page,
-            ['path' => $request->url(), 'query' => $request->query()],
-        );
+        $perPage = (int) config('store.products_per_page');
 
         return view('products.index', [
-            'products' => $products,
-            'categories' => CatalogCache::categories(),
-            'filters' => $filters,
             'canonical' => $this->catalogCanonical($filters, $page),
-            'image' => $summaries->first()?->thumbnailUrl(400, 'webp'),
+            'image' => $this->ogImage($filters, $perPage),
         ]);
     }
 
@@ -92,36 +75,20 @@ class ProductController extends Controller
     }
 
     /**
-     * Resúmenes de la página pedida, desde la caché o desde la base de datos.
-     *
-     * @return array{0: Collection<int, ProductSummary>, 1: int}
+     * Imagen destacada para OpenGraph: el primer producto de la primera página
+     * del listado, leído directamente de la caché del catálogo (sin consultar
+     * la base cuando la entrada ya está cacheada, ADR-0015).
      */
-    private function summaries(ProductFilters $filters, int $page, int $perPage): array
+    private function ogImage(ProductFilters $filters, int $perPage): ?string
     {
-        $cached = CatalogCache::products($filters, $page, $perPage);
+        $cached = CatalogCache::products($filters, 1, $perPage);
+        $first = $cached['items'][0] ?? null;
 
-        if ($cached !== null) {
-            return [
-                collect($cached['items'])->map(fn (array $row): ProductSummary => ProductSummary::fromArray($row)),
-                (int) $cached['total'],
-            ];
+        if (! is_array($first)) {
+            return null;
         }
 
-        $paginator = $filters->apply(
-            Product::query()->active()->with('category'),
-        )
-            ->sortedBy($filters->sort)
-            ->paginate($perPage);
-
-        $summaries = $paginator->getCollection()
-            ->map(fn (Product $product): ProductSummary => ProductSummary::fromModel($product));
-
-        CatalogCache::putProducts($filters, $page, $perPage, [
-            'total' => $paginator->total(),
-            'items' => $summaries->map(fn (ProductSummary $summary): array => $summary->toArray())->all(),
-        ]);
-
-        return [$summaries, $paginator->total()];
+        return ProductSummary::fromArray($first)->thumbnailUrl(400, 'webp');
     }
 
     /**
