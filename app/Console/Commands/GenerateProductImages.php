@@ -198,9 +198,17 @@ class GenerateProductImages extends Command
      */
     private function font(): string
     {
-        $font = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
+        $linuxFont = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
+        if (is_file($linuxFont)) {
+            return $linuxFont;
+        }
 
-        return is_file($font) ? $font : IMAGEPATH.'DejaVuSans.ttf';
+        $windowsFont = 'C:\Windows\Fonts\arial.ttf';
+        if (is_file($windowsFont)) {
+            return $windowsFont;
+        }
+
+        return 'C:\Windows\Fonts\arialbd.ttf';
     }
 
     /**

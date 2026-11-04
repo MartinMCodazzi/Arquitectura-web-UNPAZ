@@ -2,7 +2,7 @@
 
 * **Estado:** Aceptado
 * **Fecha:** 2026-10-22
-* **Autor:** OpenCode Agent
+* **Autor:** Martin Munoz Codazzi
 
 ## Contexto
 
@@ -30,7 +30,7 @@ Adoptar el formato **ADR (Architecture Decision Records)** en Markdown:
 
   * **Estado:** [Propuesto | Aceptado | Reemplazado]
   * **Fecha:** YYYY-MM-DD
-  * **Autor:** [Nombre / OpenCode Agent]
+  * **Autor:** [Nombre]
 
   ## Contexto
 
@@ -47,7 +47,7 @@ Adoptar el formato **ADR (Architecture Decision Records)** en Markdown:
 - El índice se actualiza en el mismo commit en que se agrega un ADR.
 - `DECISIONES_DISENO.txt` **se conserva** como bitácora de sesión (qué se hizo en cada tarea) y apunta al ADR correspondiente. Deja de ser la fuente de verdad de las decisiones técnicas.
 
-Regla permanente para los agentes: toda decisión técnica relevante (modelado de datos, librerías, patrones de diseño, estrategias de caché, filtros, SEO) se registra como un ADR nuevo en `docs/adr/` y se agrega al índice.
+Regla permanente del proyecto: toda decisión técnica relevante (modelado de datos, librerías, patrones de diseño, estrategias de caché, filtros, SEO) se registra como un ADR nuevo en `docs/adr/` y se agrega al índice.
 
 ## Consecuencias
 

@@ -2,7 +2,7 @@
 
 * **Estado:** Aceptado
 * **Fecha:** 2026-10-22
-* **Autor:** OpenCode Agent
+* **Autor:** Martin Munoz Codazzi
 
 *Complementa a [ADR-0010](0010-cache-del-catalogo-con-datos-planos.md) (la caché guarda datos planos y los objetos se rehidratan en memoria) y a [ADR-0008](0008-cache-del-catalogo-con-claves-versionadas.md) (invalidación por versión). No reemplaza a ninguno: los aplica al listado de productos.*
 

@@ -55,19 +55,41 @@
                 <div>
                     @if ($product->category)
                         <a href="{{ route('productos.index', ['categoria' => $product->category->slug]) }}"
-                           class="text-xs font-medium uppercase tracking-wide text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+                           class="text-xs font-bold uppercase tracking-wider text-orange-400 hover:text-orange-300">
                             {{ $product->category->name }}
                         </a>
                     @endif
 
-                    <h1 class="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">
+                    <h1 class="mt-2 text-2xl sm:text-3xl font-black text-white">
                         {{ $product->name }}
                     </h1>
                 </div>
 
-                <div class="flex items-baseline gap-4">
-                    <x-store.price :cents="$product->price" class="text-4xl font-bold text-gray-900 dark:text-gray-100" />
-                    <x-store.stock-badge :in-stock="$product->is_in_stock" :stock="$product->stock" variant="pill" />
+                {{-- Caja de precio y financiación estilo gaming --}}
+                <div class="rounded-xl border border-gray-800 bg-gray-900/90 p-5 shadow-lg">
+                    <div class="flex items-baseline gap-4">
+                        <x-store.price :cents="$product->price" class="text-3xl sm:text-4xl font-black text-white" />
+                        <x-store.stock-badge :in-stock="$product->is_in_stock" :stock="$product->stock" variant="pill" />
+                    </div>
+
+                    <div class="mt-3 grid gap-2 border-t border-gray-800 pt-3 text-xs sm:text-sm">
+                        <div class="flex items-center justify-between text-gray-300">
+                            <span class="flex items-center gap-1.5">
+                                💵 <strong>Precio especial transferencia:</strong>
+                            </span>
+                            <span class="text-base font-bold text-green-400">
+                                <x-store.price :cents="(int) round($product->price * 0.9)" />
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between text-gray-400">
+                            <span class="flex items-center gap-1.5">
+                                💳 <strong>Hasta 3 cuotas fijas de:</strong>
+                            </span>
+                            <span class="font-semibold text-white">
+                                <x-store.price :cents="(int) round($product->price / 3)" />
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
                 @if ($product->description)

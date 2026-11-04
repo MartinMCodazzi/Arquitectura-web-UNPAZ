@@ -43,7 +43,7 @@ php artisan products:images --force   # regenera las imágenes de demostración
 php artisan products:images --queued  # procesa las miniaturas con un job de cola
 php artisan cache:clear               # vacía la caché del catálogo
 php artisan test --compact            # suite completa de tests
-vendor/bin/pint --dirty --format agent
+vendor/bin/pint --dirty
 ```
 
 ## Funcionalidades

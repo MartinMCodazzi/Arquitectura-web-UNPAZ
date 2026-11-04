@@ -9,7 +9,7 @@
     <div class="@unless ($feedback) mt-3 @endunless @if ($withQuantity) flex flex-wrap items-end gap-3 @endif">
         @if ($withQuantity)
             <div>
-                <label for="cantidad-{{ $productId }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="cantidad-{{ $productId }}" class="block text-xs font-semibold uppercase tracking-wider text-gray-300">
                     Cantidad
                 </label>
 
@@ -18,19 +18,29 @@
                        wire:model.live="quantity"
                        min="1"
                        max="{{ max($stock, 1) }}"
-                       class="mt-1 w-24 rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900">
+                       class="mt-1 w-24 rounded-lg border-gray-700 bg-gray-800 text-center text-sm font-bold text-white shadow-sm focus:border-orange-500 focus:ring-orange-500">
             </div>
         @endif
 
-        <button type="button"
-                wire:click="addToCart"
-                @if ($withQuantity)
-                    class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                @else
-                    class="w-full rounded-md border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700"
-                @endif>
-            Agregar al carrito
-        </button>
+        <div class="flex @if ($withQuantity) flex-1 flex-wrap gap-2 @else w-full flex-col gap-1.5 @endif">
+            <button type="button"
+                    wire:click="addToCart"
+                    @if ($withQuantity)
+                        class="flex-1 rounded-lg border border-orange-500/60 bg-gray-800 px-4 py-2.5 text-sm font-bold text-orange-400 transition hover:bg-orange-500/10 focus:outline-none"
+                    @else
+                        class="w-full rounded-lg border border-gray-700 bg-gray-800/90 px-3 py-2 text-xs font-semibold text-gray-200 transition hover:border-orange-500 hover:text-orange-400"
+                    @endif>
+                🛒 Agregar al carrito
+            </button>
+
+            @if ($withQuantity)
+                <button type="button"
+                        wire:click="buyNow"
+                        class="flex-1 rounded-lg bg-orange-500 px-4 py-2.5 text-center text-sm font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400">
+                    ⚡ Comprar ahora
+                </button>
+            @endif
+        </div>
     </div>
 
     {{-- Fallback sin JavaScript (ADR-0017): el mismo POST contra el endpoint

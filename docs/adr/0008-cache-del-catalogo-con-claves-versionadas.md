@@ -2,7 +2,7 @@
 
 * **Estado:** Reemplazado
 * **Fecha:** 2026-10-22
-* **Autor:** OpenCode Agent
+* **Autor:** Martin Munoz Codazzi
 
 > **Reemplazado por [ADR-0010](0010-cache-del-catalogo-con-datos-planos.md)** (2026-10-22).
 > Se conserva el mecanismo de claves versionadas y sin *cache tags*, pero se

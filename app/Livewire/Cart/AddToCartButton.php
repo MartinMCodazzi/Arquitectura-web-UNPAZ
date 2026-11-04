@@ -89,6 +89,31 @@ class AddToCartButton extends Component
         $this->feedback('Producto agregado al carrito.', 'success');
     }
 
+    /**
+     * Agrega el producto al carrito e inmediatamente redirige a /carrito para comprar.
+     */
+    public function buyNow(): void
+    {
+        $product = Product::query()->find($this->productId);
+
+        if (! $product || ! $product->isAvailable()) {
+            $this->feedback('El producto no está disponible.', 'error');
+
+            return;
+        }
+
+        $requestedQuantity = $this->withQuantity ? max((int) $this->quantity, 1) : 1;
+        $added = app(CartService::class)->add($product, $requestedQuantity);
+
+        if ($added === 0) {
+            $this->feedback('No hay stock suficiente para comprar el producto.', 'error');
+
+            return;
+        }
+
+        $this->redirect(route('carrito.index'), navigate: false);
+    }
+
     public function updatedQuantity(): void
     {
         $quantity = max((int) $this->quantity, 1);

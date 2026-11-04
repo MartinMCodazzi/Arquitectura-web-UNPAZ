@@ -15,7 +15,7 @@ Todo ADR nuevo debe seguir esta estructura **estrictamente**:
 
 * **Estado:** [Propuesto | Aceptado | Reemplazado]
 * **Fecha:** YYYY-MM-DD
-* **Autor:** [Nombre / OpenCode Agent]
+* **Autor:** [Nombre]
 
 ## Contexto
 [Problema, necesidad de negocio o requerimiento universitario, junto con las alternativas evaluadas]

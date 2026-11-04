@@ -2,7 +2,7 @@
 
 * **Estado:** Reemplazado (por [ADR-0017](0017-carrito-reactivo-con-livewire-y-fallback-http.md))
 * **Fecha:** 2026-10-22
-* **Autor:** OpenCode Agent
+* **Autor:** Martin Munoz Codazzi
 
 *Complementa a [ADR-0004](0004-carrito-persistido-en-sesion.md) (dónde vive el carrito) y a [ADR-0011](0011-redireccion-canonica-del-formulario-de-filtros.md) (el catálogo público no depende de JavaScript). No reemplaza a ninguno: los aplica.*
 

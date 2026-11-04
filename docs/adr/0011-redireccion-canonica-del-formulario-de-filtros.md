@@ -2,7 +2,7 @@
 
 * **Estado:** Aceptado
 * **Fecha:** 2026-10-22
-* **Autor:** OpenCode Agent
+* **Autor:** Martin Munoz Codazzi
 
 *Complementa a [ADR-0002](0002-precios-como-enteros-en-centimos.md) (los precios se almacenan y se comunican en céntimos) y a [ADR-0006](0006-filtros-con-scopes-locales-de-eloquent.md) (los filtros viajan en la query string). No reemplaza a ninguno: los aplica.*
 

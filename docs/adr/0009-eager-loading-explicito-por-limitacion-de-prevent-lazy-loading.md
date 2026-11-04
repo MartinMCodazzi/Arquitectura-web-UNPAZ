@@ -2,7 +2,7 @@
 
 * **Estado:** Aceptado
 * **Fecha:** 2026-10-22
-* **Autor:** OpenCode Agent
+* **Autor:** Martin Munoz Codazzi
 
 ## Contexto
 

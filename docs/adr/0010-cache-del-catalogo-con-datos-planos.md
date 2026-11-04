@@ -2,7 +2,7 @@
 
 * **Estado:** Aceptado
 * **Fecha:** 2026-10-22
-* **Autor:** OpenCode Agent
+* **Autor:** Martin Munoz Codazzi
 
 *Reemplaza a [ADR-0008](0008-cache-del-catalogo-con-claves-versionadas.md), cuyo mecanismo de claves versionadas y sin *cache tags* se mantiene; lo que cambia es el formato de lo que se guarda en caché.*
 

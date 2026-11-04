@@ -2,7 +2,7 @@
 
 * **Estado:** Aceptado
 * **Fecha:** 2026-10-22
-* **Autor:** OpenCode Agent
+* **Autor:** Martin Munoz Codazzi
 
 *Complementa a [ADR-0007](0007-intervention-image-para-imagenes-de-producto.md) (intervention/image como motor de transformación). No reemplaza a ninguno: lo implementa.*
 

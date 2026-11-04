@@ -33,6 +33,19 @@ class CartSummary extends Component
 
     public string $feedbackType = 'success';
 
+    /**
+     * Modal de confirmación de compra y checkout simulado.
+     */
+    public bool $showCheckoutModal = false;
+
+    public string $checkoutName = '';
+
+    public string $checkoutEmail = '';
+
+    public string $checkoutPayment = 'transferencia';
+
+    public ?string $orderPlacedMessage = null;
+
     public function mount(): void
     {
         $this->syncQuantities();
@@ -93,6 +106,71 @@ class CartSummary extends Component
         $this->quantities = [];
 
         $this->notify('Carrito vaciado.', 'success');
+    }
+
+    /**
+     * Abre el modal de checkout para finalizar la compra.
+     */
+    public function openCheckout(): void
+    {
+        if (app(CartService::class)->isEmpty()) {
+            $this->notify('El carrito está vacío.', 'warning');
+
+            return;
+        }
+
+        $this->checkoutName = auth()->user()?->name ?? '';
+        $this->checkoutEmail = auth()->user()?->email ?? '';
+        $this->showCheckoutModal = true;
+    }
+
+    /**
+     * Cierra el modal de checkout.
+     */
+    public function closeCheckout(): void
+    {
+        $this->showCheckoutModal = false;
+    }
+
+    /**
+     * Procesa y confirma la orden simulada.
+     */
+    public function processCheckout(): void
+    {
+        $cart = app(CartService::class);
+
+        if ($cart->isEmpty()) {
+            $this->showCheckoutModal = false;
+            $this->notify('Tu carrito está vacío.', 'error');
+
+            return;
+        }
+
+        $this->validate([
+            'checkoutName' => ['required', 'string', 'min:3', 'max:100'],
+            'checkoutEmail' => ['required', 'email'],
+            'checkoutPayment' => ['required', 'in:transferencia,tarjeta,efectivo'],
+        ], [
+            'checkoutName.required' => 'Ingresá tu nombre y apellido.',
+            'checkoutName.min' => 'El nombre debe tener al menos 3 caracteres.',
+            'checkoutEmail.required' => 'Ingresá tu correo electrónico.',
+            'checkoutEmail.email' => 'El formato del correo no es válido.',
+        ]);
+
+        $orderNumber = strtoupper('ORD-'.date('Ymd').'-'.rand(1000, 9999));
+        $paymentLabel = match ($this->checkoutPayment) {
+            'transferencia' => 'Transferencia bancaria (10% OFF especial)',
+            'tarjeta' => 'Tarjeta de crédito / débito',
+            default => 'Efectivo contra entrega',
+        };
+
+        // Vaciamos el carrito tras procesar con éxito
+        $cart->clear();
+        $this->quantities = [];
+        $this->showCheckoutModal = false;
+
+        $this->orderPlacedMessage = "¡Felicitaciones {$this->checkoutName}! Tu orden {$orderNumber} fue registrada con éxito abonando con {$paymentLabel}. Te enviamos los detalles a {$this->checkoutEmail}.";
+        $this->dispatch('carrito-actualizado');
     }
 
     /**

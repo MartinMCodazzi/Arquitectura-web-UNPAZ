@@ -1,4 +1,25 @@
 <div>
+    @if ($orderPlacedMessage)
+        <div class="mb-8 rounded-xl border border-green-500/40 bg-gradient-to-r from-gray-900 to-gray-800 p-6 text-center shadow-lg dark:border-green-500/50">
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-500/20 text-green-400">
+                <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h3 class="mt-4 text-xl font-bold text-white">¡Compra finalizada con éxito!</h3>
+            <p class="mt-2 text-sm text-gray-300">{{ $orderPlacedMessage }}</p>
+            <div class="mt-6">
+                <a href="{{ route('productos.index') }}"
+                   class="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-orange-600 focus:outline-none">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Seguir explorando productos
+                </a>
+            </div>
+        </div>
+    @endif
+
     @if ($feedback)
         <div class="mb-4">
             <x-store.alert :type="$feedbackType">{{ $feedback }}</x-store.alert>
@@ -210,17 +231,113 @@
                     </dl>
 
                     <button type="button"
-                            disabled
-                            class="mt-6 w-full cursor-not-allowed rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-500 dark:bg-gray-700 dark:text-gray-400">
-                        Finalizar compra (fuera de alcance)
+                            wire:click="openCheckout"
+                            class="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-orange-500 py-3 text-center text-sm font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Finalizar compra
                     </button>
 
                     <p class="mt-4 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
-                        Tu carrito se guarda en la sesión del navegador (cookie de sesión): no hace falta
-                        iniciar sesión y se conserva mientras la sesión esté activa.
+                        ⚡ Garantía oficial y envío asegurado en todas tus compras gamer.
                     </p>
                 </div>
             </aside>
+        </div>
+    @endif
+
+    {{-- Modal Checkout / Confirmación de Compra --}}
+    @if ($showCheckoutModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm animate-fade-in">
+            <div class="relative w-full max-w-lg rounded-2xl border border-gray-700 bg-gray-900 p-6 text-white shadow-2xl">
+                <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500/20 text-orange-400">
+                            🎮
+                        </span>
+                        <h3 class="text-lg font-bold text-white">Finalizar tu Pedido</h3>
+                    </div>
+                    <button type="button" wire:click="closeCheckout" class="text-gray-400 hover:text-white">
+                        ✕
+                    </button>
+                </div>
+
+                <form wire:submit.prevent="processCheckout" class="mt-4 space-y-4">
+                    <div>
+                        <label for="checkoutName" class="block text-xs font-semibold uppercase tracking-wider text-gray-300">
+                            Nombre y Apellido *
+                        </label>
+                        <input id="checkoutName"
+                               type="text"
+                               wire:model="checkoutName"
+                               placeholder="Ej. Juan Pérez"
+                               class="mt-1 w-full rounded-lg border border-gray-700 bg-gray-800 px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                        @error('checkoutName') <span class="text-xs text-red-400">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div>
+                        <label for="checkoutEmail" class="block text-xs font-semibold uppercase tracking-wider text-gray-300">
+                            Correo Electrónico (para comprobante) *
+                        </label>
+                        <input id="checkoutEmail"
+                               type="email"
+                               wire:model="checkoutEmail"
+                               placeholder="juan@ejemplo.com"
+                               class="mt-1 w-full rounded-lg border border-gray-700 bg-gray-800 px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                        @error('checkoutEmail') <span class="text-xs text-red-400">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300">
+                            Método de Pago
+                        </label>
+                        <div class="mt-2 space-y-2">
+                            <label class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-700 bg-gray-800/80 p-3 hover:border-orange-500/60 {{ $checkoutPayment === 'transferencia' ? 'border-orange-500 ring-1 ring-orange-500' : '' }}">
+                                <div class="flex items-center gap-3">
+                                    <input type="radio" wire:model.live="checkoutPayment" value="transferencia" class="text-orange-500 focus:ring-orange-500">
+                                    <span class="text-sm font-medium">Transferencia Bancaria</span>
+                                </div>
+                                <span class="rounded bg-orange-500/20 px-2 py-0.5 text-xs font-bold text-orange-400">10% OFF Especial</span>
+                            </label>
+
+                            <label class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-700 bg-gray-800/80 p-3 hover:border-orange-500/60 {{ $checkoutPayment === 'tarjeta' ? 'border-orange-500 ring-1 ring-orange-500' : '' }}">
+                                <div class="flex items-center gap-3">
+                                    <input type="radio" wire:model.live="checkoutPayment" value="tarjeta" class="text-orange-500 focus:ring-orange-500">
+                                    <span class="text-sm font-medium">Tarjeta de Débito / Crédito</span>
+                                </div>
+                                <span class="text-xs text-gray-400">Hasta 3 cuotas</span>
+                            </label>
+
+                            <label class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-700 bg-gray-800/80 p-3 hover:border-orange-500/60 {{ $checkoutPayment === 'efectivo' ? 'border-orange-500 ring-1 ring-orange-500' : '' }}">
+                                <div class="flex items-center gap-3">
+                                    <input type="radio" wire:model.live="checkoutPayment" value="efectivo" class="text-orange-500 focus:ring-orange-500">
+                                    <span class="text-sm font-medium">Efectivo contra entrega</span>
+                                </div>
+                                <span class="text-xs text-gray-400">Retiro en local</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="rounded-lg bg-gray-800 p-3.5 text-sm">
+                        <div class="flex justify-between text-gray-300">
+                            <span>Total a pagar:</span>
+                            <span class="text-base font-bold text-orange-400">
+                                <x-store.price :cents="$totals['total']" />
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-3 pt-3">
+                        <button type="button" wire:click="closeCheckout" class="rounded-lg px-4 py-2 text-sm text-gray-400 hover:text-white">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-white shadow-lg hover:bg-orange-600 focus:outline-none">
+                            Confirmar y Comprar
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     @endif
 </div>

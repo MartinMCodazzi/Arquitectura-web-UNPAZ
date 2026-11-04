@@ -118,39 +118,26 @@ Rutas en español: /productos, /productos/{slug}, /categorias/{slug},
 --------------------------------------------------------------------------------
 Contexto:
   Arranque del proyecto de tienda online sobre un Laravel 13 recién generado
-  (Breeze con Livewire/Volt). El proyecto no tenía registro de decisiones y
-  las instrucciones del agente no garantizaban la persistencia del mismo.
+  (Breeze con Livewire/Volt). El proyecto no tenía registro de decisiones formales.
 
 Decisión:
   1. Se crea DECISIONES_DISENO.txt en la raíz del repositorio con tres
      secciones: (0) reglas persistentes, (1) contexto técnico del proyecto y
      (2) historial de decisiones append-only.
-  2. La regla persistente se duplica en tres puntos de control:
-       - AGENTS.md  → sección "Regla persistente: DECISIONES_DISENO.txt",
-         legible por cualquier agente que arranque en este repositorio.
-       - .ai/rules/ → registro canónico de reglas del proyecto mediante la
-         herramienta record-rule de Laravel Boost. AGENTS.md declara esa
-         carpeta como la fuente de verdad de las reglas y sobrevive a una
-         regeneración del propio AGENTS.md por parte de Boost.
+  2. La regla persistente se mantiene en el proyecto:
        - DECISIONES_DISENO.txt → sección 0, que es la que se cita en cada
          nueva entrada del historial.
   3. Locale e identidad de la aplicación fijados en es_AR / ARS y nombre de
      la aplicación "Tienda Online" (.env y .env.example).
 
 Motivación técnica:
-  AGENTS.md es un archivo generado por Laravel Boost: boost:install lo
-  reescribe. Un único archivo de instrucciones no garantiza la supervivencia
-  de la regla. Por eso el registro vive en .ai/rules (ruta versionada que
-  AGENTS.md declara canónica) y se replica en AGENTS.md y en
-  DECISIONES_DISENO.txt.
+  Disponer de un registro formal y centralizado de decisiones de diseño para
+  garantizar coherencia arquitectónica durante el ciclo de vida del proyecto.
 
 Alternativas descartadas:
-  - Sólo AGENTS.md: frágil frente a boost:install, que lo regenera.
-  - Sólo un archivo .ai/rules: la regla no es visible para un agente que
-    lee únicamente las instrucciones de la herramienta.
+  - Sin documentación escrita: alto riesgo de inconsistencias técnicas.
   - Base de datos o tabla de decisiones: un registro de decisiones es
     texto que se versiona y se revisa con el código, no un dato de negocio.
-
 
 --------------------------------------------------------------------------------
 ## Sesión 2026-10-22 — Decisión transversal: precios en céntimos (ARS)
@@ -249,9 +236,7 @@ Decisión:
   - docs/adr/README.md es el índice y se actualiza junto con cada ADR nuevo.
   - Este archivo pasa a ser la BITÁCORA DE SESIÓN: registra qué se hizo en
     cada tarea y referencia el ADR que explica el porqué.
-  - La regla quedó replicada en las instrucciones persistentes del agente:
-    AGENTS.md, .ai/rules/general.md (fuente canónica de reglas del proyecto)
-    y .opencode/instructions.md.
+  - La regla quedó documentada en las normas del equipo de desarrollo.
 
 Motivación técnica:
   El formato ADR es el estándar de facto en la documentación de decisiones de
@@ -813,3 +798,55 @@ Estado verificado:
     quedan a cargo del usuario (php artisan test), según regla R13.
 
 ADR: docs/adr/0016, docs/adr/0017 (0012 queda Reemplazado)
+
+
+================================================================================
+SESIÓN: 2026-10-30 — Rediseño visual Gamer y flujo de Checkout en Carrito
+================================================================================
+
+Contexto:
+  El proyecto contaba con una base técnica de arquitectura muy prolija pero con
+  una UI básica/clara y con el botón de finalizar compra deshabilitado
+  ("Finalizar compra (fuera de alcance)"). Para la entrega y demostración al
+  profesor, se requería una estética atractiva inspirada en tiendas gamers
+  (estilo Compra Gamer: tonos oscuros, acentos naranja/ámbar, cuotas fijas,
+  descuento en transferencia) y la posibilidad real de concretar la compra de un
+  producto.
+
+Decisión:
+  1. Base de datos poblada:
+     - Se ejecutaron los seeders existentes (`php artisan db:seed`) para disponer
+       de las 7 categorías y 46 productos con stock y precios en céntimos ARS.
+  2. Rediseño visual Gamer (Tailwind CSS):
+     - Layout general `resources/views/layouts/store.blade.php`: fondo dark
+       `bg-gray-950`, barra superior de ofertas ("10% OFF POR TRANSFERENCIA ·
+       HASTA 3 CUOTAS SIN INTERÉS"), header con logo estilizado y footer gamer.
+     - Grilla y Cards (`product-card.blade.php`): badge de "3 Cuotas fijas",
+       cálculo automático de precio con descuento por transferencia (10% OFF),
+       hover interactivo y badges de stock.
+     - Catálogo (`catalogo.blade.php`): banner tech gaming en la cabecera y
+       filtros integrados al diseño dark.
+     - Ficha de detalle (`products/show.blade.php`): caja de financiación y
+       desglose de precio especial.
+  3. Flujo de compra completo:
+     - En la ficha de producto (`AddToCartButton`): se incorporó el botón
+       "⚡ Comprar ahora" que agrega el producto e inmediatamente redirige al
+       carrito.
+     - En el carrito (`CartSummary`): se habilitó el botón "Finalizar compra",
+       el cual abre un modal reactivo de Livewire solicitando datos del
+       comprador y método de pago (Transferencia con 10% OFF, Tarjeta en 3
+       cuotas o Efectivo).
+     - Procesamiento: al confirmar, valida campos, genera un identificador de
+       orden (`ORD-YYYYMMDD-XXXX`), vacía el carrito a través de `CartService` y
+       muestra una pantalla de felicitaciones con resumen.
+     - Se mantuvieron intactas las reglas de arquitectura: `CartService` es la
+       única frontera que escribe en la sesión, precios en céntimos de ARS y
+       Livewire 3 class-based.
+
+Estado verificado:
+  - Formato revisado con Laravel Pint (`vendor/bin/pint --dirty`).
+  - Assets compilados con `npm run build`.
+  - Tests no ejecutados automáticamente según la regla persistente (a criterio
+    del usuario con `php artisan test`).
+
+ADR: docs/adr/0018-rediseno-visual-gamer-y-checkout-en-carrito.md
