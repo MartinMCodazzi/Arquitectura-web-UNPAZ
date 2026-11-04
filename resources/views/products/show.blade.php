@@ -29,7 +29,7 @@
         </nav>
 
         <div class="mt-6 grid gap-8 lg:grid-cols-2">
-            <div class="flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700">
+            <div class="flex aspect-square items-center justify-center overflow-hidden rounded-2xl border border-gray-800 bg-gray-950 p-6 shadow-xl">
                 @if ($product->image_url_large)
                     <picture>
                         @if ($avif = $product->thumbnailUrl(800, 'avif'))
@@ -42,12 +42,15 @@
                              fetchpriority="high"
                              width="800"
                              height="800"
-                             class="h-full w-full object-cover">
+                             class="h-full w-full object-contain transition duration-300">
                     </picture>
                 @else
-                    <span class="px-6 text-center text-sm font-medium text-gray-400 dark:text-gray-500">
-                        {{ $product->name }}
-                    </span>
+                    <div class="flex flex-col items-center justify-center p-6 text-center">
+                        <span class="text-6xl text-gray-700">⚡</span>
+                        <span class="mt-4 text-sm font-semibold text-gray-500">
+                            {{ $product->name }}
+                        </span>
+                    </div>
                 @endif
             </div>
 

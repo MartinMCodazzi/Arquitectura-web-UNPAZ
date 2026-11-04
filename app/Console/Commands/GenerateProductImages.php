@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Jobs\GenerateProductThumbnails;
 use App\Models\Product;
 use App\Services\ImageService;
+use Database\Seeders\ProductSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
@@ -84,8 +85,27 @@ class GenerateProductImages extends Command
 
         $disk = Storage::disk('public');
         $disk->makeDirectory(dirname($path));
+        $target = $disk->path($path);
 
-        $this->drawPlaceholder($disk->path($path), $product);
+        $seedProduct = collect(ProductSeeder::PRODUCTS)->firstWhere('slug', $product->slug);
+        $downloaded = false;
+        if (! empty($seedProduct['image_url'])) {
+            $context = stream_context_create([
+                'http' => [
+                    'timeout' => 5,
+                    'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+                ],
+            ]);
+            $content = @file_get_contents($seedProduct['image_url'], false, $context);
+            if ($content !== false && strlen($content) > 1000) {
+                file_put_contents($target, $content);
+                $downloaded = true;
+            }
+        }
+
+        if (! $downloaded) {
+            $this->drawPlaceholder($target, $product);
+        }
 
         return $path;
     }

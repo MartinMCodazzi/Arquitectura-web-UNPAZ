@@ -28,7 +28,17 @@ class ImageController extends Controller
 
         abort_unless($disk->exists($path), 404);
 
+        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $contentType = match ($extension) {
+            'webp' => 'image/webp',
+            'avif' => 'image/avif',
+            'jpg', 'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            default => 'image/webp',
+        };
+
         return response()->file($disk->path($path), [
+            'Content-Type' => $contentType,
             'Cache-Control' => 'public, max-age='.(int) config('store.image_cache_seconds').', immutable',
         ]);
     }

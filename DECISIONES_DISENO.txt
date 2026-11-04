@@ -850,3 +850,50 @@ Estado verificado:
     del usuario con `php artisan test`).
 
 ADR: docs/adr/0018-rediseno-visual-gamer-y-checkout-en-carrito.md
+
+
+================================================================================
+SESIÓN: 2026-11-04 — Catálogo Gamer/Tecnología y Solución en Entrega de Imágenes
+================================================================================
+
+Contexto:
+  El catálogo de la tienda aún conservaba categorías y productos de una tienda
+  departamental generalista (perfumes, indumentaria, cocina, libros, etc.) que no
+  coincidían con la temática gamer/tecnología. Asimismo, las imágenes de producto
+  se visualizaban rotas o como bloques planos monocromáticos con texto debido a
+  dos causas: la falta de cabecera Content-Type explícita en ImageController
+  (incompatible con la resolución MIME en Windows para WebP/AVIF) y la ausencia
+  de fotografías reales en los seeders.
+
+Decisión:
+  1. Catálogo 100% Gamer & Tecnología:
+     - Se eliminaron de la base de datos todas las categorías y productos ajenos
+       a la tecnología.
+     - Se actualizaron CategorySeeder y ProductSeeder con 6 categorías gaming:
+       Componentes de PC, Periféricos Gamer, Monitores Gamer, Notebooks & PCs
+       Gamer, Consolas y Videojuegos, y Sillas y Setup Gamer.
+     - Se incorporaron 24 productos con nombres, descripciones y especificaciones
+       reales de hardware y consolas (RTX 4070, Ryzen 7 7800X3D, PS5, Switch,
+       periféricos HyperX/Logitech, monitores 165Hz/240Hz, etc.), respetando
+       los precios en céntimos ARS y stock.
+  2. Corrección y entrega de imágenes de producto:
+     - En ImageController, se agregó el envío explícito del encabezado
+       `Content-Type` correspondiente a la extensión del archivo (`image/webp`,
+       `image/avif`, `image/jpeg`, `image/png`), solucionando el fallo donde
+       Windows devolvía una cabecera vacía y los navegadores no mostraban la imagen.
+     - Se configuró la descarga y procesamiento automático de fotografías reales
+       de alta calidad para los 24 productos, generando las miniaturas WebP y
+       AVIF en 200, 400 y 800 píxeles a través de ImageService.
+     - En `resources/views/products/show.blade.php`, se adaptó el contenedor de
+       imagen con fondo dark (`bg-gray-950`), borde sutil y ajuste `object-contain`
+       para evitar recortes visuales.
+     - En el header (`resources/views/layouts/store.blade.php`), se actualizaron
+       los accesos directos a las nuevas categorías del catálogo.
+
+Estado verificado:
+  - Base de datos depurada y poblada con 6 categorías y 24 productos gamer.
+  - Generación de miniaturas WebP/AVIF completada y verificada vía ImageController
+    con HTTP 200 y Content-Type: image/webp.
+  - Cumplimiento de reglas R1-R13 del proyecto.
+
+ADR: docs/adr/0019-catalogo-exclusivo-gamer-y-entrega-de-imagenes.md

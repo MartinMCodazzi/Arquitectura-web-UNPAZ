@@ -6,7 +6,7 @@ use App\Models\Category;
 use Illuminate\Database\Seeder;
 
 /**
- * Catálogo base de categorías de la tienda.
+ * Catálogo base de categorías gamer y tecnología de la tienda.
  *
  * El seeder es idempotente: se puede ejecutar varias veces sin duplicar filas
  * porque usa updateOrCreate sobre el slug (clave natural de la categoría).
@@ -18,45 +18,39 @@ class CategorySeeder extends Seeder
      */
     private const CATEGORIES = [
         [
-            'name' => 'Electrónica',
-            'slug' => 'electronica',
-            'description' => 'Audio, wearables y accesorios para acompañar tu día a día conectado.',
+            'name' => 'Componentes de PC',
+            'slug' => 'componentes-pc',
+            'description' => 'Placas de video, procesadores, memorias RAM, discos SSD y fuentes para armar o mejorar tu setup.',
             'is_active' => true,
         ],
         [
-            'name' => 'Hogar y Cocina',
-            'slug' => 'hogar-y-cocina',
-            'description' => 'Utensilios, organización y todo lo que hace mejor funcionar una casa.',
+            'name' => 'Periféricos Gamer',
+            'slug' => 'perifericos-gamer',
+            'description' => 'Teclados mecánicos, mouses ópticos de alta precisión, auriculares 7.1 y accesorios para competir.',
             'is_active' => true,
         ],
         [
-            'name' => 'Moda',
-            'slug' => 'moda',
-            'description' => 'Indumentaria, calzado y accesorios con estilo para cada ocasión.',
+            'name' => 'Monitores Gamer',
+            'slug' => 'monitores-gamer',
+            'description' => 'Pantallas de alta tasa de refresco, paneles IPS rápidos y curvaturas inmersivas para no perderte ningún fotograma.',
             'is_active' => true,
         ],
         [
-            'name' => 'Deportes',
-            'slug' => 'deportes',
-            'description' => 'Equipamiento para entrenar, competir y moverse con más energía.',
+            'name' => 'Notebooks & PCs Gamer',
+            'slug' => 'notebooks-y-pcs',
+            'description' => 'Equipos portátiles de alto rendimiento y PCs armadas listas para jugar y transmitir en directo.',
             'is_active' => true,
         ],
         [
-            'name' => 'Libros',
-            'slug' => 'libros',
-            'description' => 'Novela, ensayo y material de estudio seleccionados por nuestro equipo editorial.',
+            'name' => 'Consolas y Videojuegos',
+            'slug' => 'consolas-y-gaming',
+            'description' => 'Consolas de última generación, joysticks inalámbricos y mandos de precisión para todas las plataformas.',
             'is_active' => true,
         ],
         [
-            'name' => 'Juguetes',
-            'slug' => 'juguetes',
-            'description' => 'Juegos educativos y de entretenimiento para todas las edades.',
-            'is_active' => true,
-        ],
-        [
-            'name' => 'Belleza y Cuidado Personal',
-            'slug' => 'belleza-y-cuidado-personal',
-            'description' => 'Cuidado de la piel, el cabello y el bienestar diario.',
+            'name' => 'Sillas y Setup Gamer',
+            'slug' => 'sillas-y-setup',
+            'description' => 'Sillas ergonómicas de competición, escritorios gaming y soportes para tu estación de batalla.',
             'is_active' => true,
         ],
     ];

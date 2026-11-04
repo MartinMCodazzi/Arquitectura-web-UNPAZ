@@ -73,12 +73,20 @@
 
                             <nav class="hidden md:flex items-center space-x-1">
                                 <a href="{{ route('productos.index') }}"
-                                   class="px-3 py-1.5 rounded-lg text-sm font-semibold transition {{ request()->routeIs('productos.*') ? 'bg-orange-500/15 text-orange-400 border border-orange-500/30' : 'text-gray-300 hover:text-white hover:bg-gray-800' }}">
-                                    Catálogo Gamer
+                                   class="px-3 py-1.5 rounded-lg text-sm font-semibold transition {{ request()->routeIs('productos.*') && ! request('categoria') ? 'bg-orange-500/15 text-orange-400 border border-orange-500/30' : 'text-gray-300 hover:text-white hover:bg-gray-800' }}">
+                                    Catálogo Completo
                                 </a>
-                                <a href="{{ route('productos.index', ['categoria' => 'electronica']) }}"
-                                   class="px-3 py-1.5 rounded-lg text-sm font-semibold text-gray-300 hover:text-white hover:bg-gray-800 transition">
-                                    Hardware & Accesorios
+                                <a href="{{ route('productos.index', ['categoria' => 'componentes-pc']) }}"
+                                   class="px-3 py-1.5 rounded-lg text-sm font-semibold transition {{ request('categoria') === 'componentes-pc' ? 'bg-orange-500/15 text-orange-400 border border-orange-500/30' : 'text-gray-300 hover:text-white hover:bg-gray-800' }}">
+                                    Componentes PC
+                                </a>
+                                <a href="{{ route('productos.index', ['categoria' => 'perifericos-gamer']) }}"
+                                   class="px-3 py-1.5 rounded-lg text-sm font-semibold transition {{ request('categoria') === 'perifericos-gamer' ? 'bg-orange-500/15 text-orange-400 border border-orange-500/30' : 'text-gray-300 hover:text-white hover:bg-gray-800' }}">
+                                    Periféricos
+                                </a>
+                                <a href="{{ route('productos.index', ['categoria' => 'consolas-y-gaming']) }}"
+                                   class="px-3 py-1.5 rounded-lg text-sm font-semibold transition {{ request('categoria') === 'consolas-y-gaming' ? 'bg-orange-500/15 text-orange-400 border border-orange-500/30' : 'text-gray-300 hover:text-white hover:bg-gray-800' }}">
+                                    Consolas
                                 </a>
                             </nav>
                         </div>
