@@ -2,10 +2,14 @@
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\MercadoPagoController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
+use App\Livewire\Account\AccountPage;
 use App\Models\Category;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -60,6 +64,27 @@ Route::delete('/carrito', [CartController::class, 'clear'])
 
 /*
 |--------------------------------------------------------------------------
+| Pago simulado con Mercado Pago
+|--------------------------------------------------------------------------
+|
+| Sin credenciales de Mercado Pago, el flujo reproduce la redirección y la
+| vuelta al sitio. El resumen del checkout viaja en la sesión.
+|
+*/
+
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout/mercadopago', [MercadoPagoController::class, 'show'])
+        ->name('checkout.mercadopago');
+
+    Route::post('/checkout/mercadopago/pagar', [MercadoPagoController::class, 'confirm'])
+        ->name('checkout.mercadopago.confirm');
+
+    Route::post('/checkout/mercadopago/cancelar', [MercadoPagoController::class, 'cancel'])
+        ->name('checkout.mercadopago.cancel');
+});
+
+/*
+|--------------------------------------------------------------------------
 | Miniaturas de producto
 |--------------------------------------------------------------------------
 |
@@ -88,6 +113,19 @@ Route::get('/sitemap.xml', SitemapController::class)
 
 Route::get('/robots.txt', RobotsController::class)
     ->name('robots');
+
+Route::get('/mi-cuenta', AccountPage::class)
+    ->middleware('auth')
+    ->name('mi-cuenta');
+
+Route::post('/logout', function (Request $request) {
+    Auth::guard('web')->logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('productos.index');
+})->middleware('auth')->name('logout');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
