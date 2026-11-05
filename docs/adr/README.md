@@ -52,7 +52,7 @@ Reglas complementarias:
 
 | ADR | Título | Estado | Fecha | Resumen |
 | --- | ------ | ------ | ----- | ------- |
-| [0001](0001-registro-de-decisiones-en-formato-adr.md) | Registro de decisiones de arquitectura en formato ADR | Aceptado | 2026-10-22 | Por qué las decisiones se documentan en `docs/adr/` con plantilla ADR y índice, en lugar de un archivo de texto corrido. |
+| [0001](0001-registro-de-decisiones-en-formato-adr.md) | Arquitectura y stack tecnológico del proyecto | Aceptado | 2026-11-05 | Monolito Laravel 13 sobre PHP 8.3: Eloquent como ORM, Blade + Livewire 3/Volt para la interfaz, SQLite, sesiones/caché/colas sobre base de datos, Vite + Tailwind, Pest 4 y Pint. |
 | [0002](0002-precios-como-enteros-en-centimos.md) | Los precios se almacenan como enteros en céntimos | Aceptado | 2026-10-22 | `products.price` es un `unsignedBigInteger` en céntimos de ARS; el formato a moneda es cosa de la presentación. |
 | [0003](0003-locale-es-ar-y-moneda-ars.md) | Locale `es_AR`, moneda ARS y rutas en español | Aceptado | 2026-10-22 | Identidad regional de la aplicación: `es_AR`, ARS, `America/Argentina/Buenos_Aires` y configuración de negocio en `config/store.php`. |
 | [0004](0004-carrito-persistido-en-sesion.md) | El carrito de compras se persiste en la sesión | Aceptado | 2026-10-22 | `CartService` sobre la sesión, con array plano `{ id => cantidad }`; sin tablas `carts`/`cart_items`. |
