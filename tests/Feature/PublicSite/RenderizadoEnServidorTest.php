@@ -7,15 +7,15 @@ use App\Models\Product;
 | Renderizado en servidor y modo sin JavaScript
 |--------------------------------------------------------------------------
 |
-| ADR-0016 introduce Livewire como capa de reactividad del sitio, así que las
+| ADR-0009 introduce Livewire como capa de reactividad del sitio, así que las
 | garantías originales de "cero JavaScript" ya no aplican en forma literal y
 | esos tests fueron descartados. Lo que se sigue garantizando acá es:
 |
 |   1. El listado y el carrito se renderizan en servidor (el SSR inicial de
 |      Livewire: el HTML que llega al navegador tiene los datos ya resueltos).
 |   2. El flujo sin JavaScript sobrevive: los endpoints HTTP del carrito y el
-|      redirect canónico del formulario de filtros (ADR-0011) siguen
-|      funcionando detrás de bloques <noscript>.
+|      redirect canónico del formulario de filtros siguen funcionando detrás
+|      de bloques <noscript>.
 |
 */
 

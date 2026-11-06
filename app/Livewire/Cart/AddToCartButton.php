@@ -9,7 +9,7 @@ use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
- * Botón "Agregar al carrito" (ADR-0017).
+ * Botón "Agregar al carrito" (ADR-0010).
  *
  * Lo usan la card del catálogo (cantidad fija = 1) y la ficha de producto
  * (con selector de cantidad). La única frontera de escritura es

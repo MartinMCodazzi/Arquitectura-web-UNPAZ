@@ -48,7 +48,7 @@ return [
     | Los anchos de las miniaturas que genera App\Services\ImageService y la
     | calidad de la recompresión. La calidad es un compromiso: valores muy
     | altos producen archivos pesados y muy bajos destruyen los bordes de las
-    | imágenes de producto (ver ADR-0007).
+    | imágenes de producto (ver ADR-0005).
     |
     */
 

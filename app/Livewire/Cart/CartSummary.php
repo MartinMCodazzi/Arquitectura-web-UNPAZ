@@ -13,7 +13,7 @@ use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 /**
- * Página del carrito (ADR-0017).
+ * Página del carrito (ADR-0010).
  *
  * Las cantidades se editan con `wire:model.live.debounce` sobre el array
  * `quantities` (producto id => cantidad); quitar una línea y vaciar el
@@ -181,7 +181,7 @@ class CartSummary extends Component
     /**
      * Producto resuelto por id; si ya no existe en la base, se construye un
      * modelo mínimo con `isAvailable()` en falso para que CartService purgue
-     * la línea de la sesión (ADR-0004).
+     * la línea de la sesión (ADR-0002).
      */
     private function resolvable(int $productId): Product
     {

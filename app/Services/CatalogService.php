@@ -11,10 +11,10 @@ use Illuminate\Support\Collection;
 
 /**
  * Listado del catálogo: resuelve la página pedida combinando caché y base de
- * datos (ver ADR-0010, ADR-0015).
+ * datos (ver ADR-0006, ADR-0008).
  *
  * Es el mismo cálculo que consumía la vista server-rendered del catálogo y,
- * desde ADR-0016 (reactividad con Livewire), lo comparten el controlador y el
+ * desde ADR-0009 (reactividad con Livewire), lo comparten el controlador y el
  * componente `App\Livewire\Catalog\Catalogo`, de modo que el modo sin
  * JavaScript y el modo reactivo salen de exactamente el mismo código.
  */
@@ -22,7 +22,7 @@ class CatalogService
 {
     /**
      * Página pedida del listado, con resúmenes de producto y paginador listo
-     * para generar links (query con los filtros canónicos, ADR-0006).
+     * para generar links (query con los filtros canónicos, ADR-0004).
      */
     public function page(ProductFilters $filters, int $page, int $perPage): LengthAwarePaginator
     {

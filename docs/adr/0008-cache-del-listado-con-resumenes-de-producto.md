@@ -1,20 +1,20 @@
-# ADR-0015: El listado del catálogo se cachea como datos planos y la vista consume resúmenes
+# ADR-0008: El listado del catálogo se cachea como datos planos y la vista consume resúmenes
 
 * **Estado:** Aceptado
 * **Fecha:** 2026-10-22
 * **Autor:** Martin Munoz Codazzi
 
-*Complementa a [ADR-0010](0010-cache-del-catalogo-con-datos-planos.md) (la caché guarda datos planos y los objetos se rehidratan en memoria) y a [ADR-0008](0008-cache-del-catalogo-con-claves-versionadas.md) (invalidación por versión). No reemplaza a ninguno: los aplica al listado de productos.*
+*Complementa a [ADR-0006](0006-cache-del-catalogo-con-datos-planos.md) (la caché guarda datos planos y los objetos se rehidratan en memoria). No reemplaza a ninguno: lo aplica al listado de productos.*
 
 ## Contexto
 
 Hasta ahora la caché del catálogo guardaba solamente la lista de categorías. El listado de productos, que es la página más solicitada del sitio, consultaba la base de datos en cada request: una consulta de productos con su categoría, el conteo total de la paginación y el renderizado de la vista.
 
-ADR-0010 ya había resuelto el problema de fondo (en Laravel 13 la caché no deserializa clases PHP, así que lo que se guarda son arrays planos y los objetos se rehidratan en memoria), pero faltaba tomar la decisión de **qué se cachea del listado y cómo se reconstruye la paginación**.
+ADR-0006 ya había resuelto el problema de fondo (en Laravel 13 la caché no deserializa clases PHP, así que lo que se guarda son arrays planos y los objetos se rehidratan en memoria), pero faltaba tomar la decisión de **qué se cachea del listado y cómo se reconstruye la paginación**.
 
 Alternativas evaluadas:
 
-- **Cachear los modelos Eloquent:** ya está descartado por ADR-0010: al releerlos quedarían como `__PHP_Incomplete_Class`.
+- **Cachear los modelos Eloquent:** ya está descartado por ADR-0006: al releerlos quedarían como `__PHP_Incomplete_Class`.
 - **Cachear el HTML renderizado del listado (caché de fragmentos):** es lo más simple y la respuesta es idéntica byte a byte. El problema es que el fragmento depende de la URL (cada combinación de filtros y cada página necesita su propia entrada), no se puede invalidar de forma selectiva cuando cambia un producto y el HTML cacheado envejece con datos viejos si el TTL vence sin que los observadores se disparen.
 - **Cachear solamente los identificadores y volver a consultar:** no ahorra la consulta principal, que es la que cuesta.
 - **Cachear las filas planas del listado y reconstruir el paginador en memoria:** el payload es un array con el total y las filas; al releerlo se rehidratan objetos de presentación y se arma un `LengthAwarePaginator` con esos datos. La consulta a la base de datos desaparece por completo en el camino caliente.
@@ -24,11 +24,11 @@ Alternativas evaluadas:
 **El listado filtrado del catálogo se cachea por combinación de filtros y página, guardado como datos planos; la vista consume siempre `App\DTO\ProductSummary` y nunca un modelo Eloquent.**
 
 - **Qué se cachea.** El resultado de la consulta paginada: el total de productos que cumplen los filtros y las filas de la página pedida. Cada fila es un array plano con `id`, `name`, `slug`, `price`, `stock`, `category` (array o `null`), `image_version` e `image_formats`.
-- **Clave.** `catalogo.productos.v{version}.{huella}`, donde la huella es el SHA-1 de los filtros normalizados, la página y el tamaño de página. La versión es la del catálogo: cuando un producto o una categoría cambian, los observadores la incrementan (ADR-0008) y las entradas viejas quedan huérfanas y se limpian solas al vencer su TTL.
+- **Clave.** `catalogo.productos.v{version}.{huella}`, donde la huella es el SHA-1 de los filtros normalizados, la página y el tamaño de página. La versión es la del catálogo: cuando un producto o una categoría cambian, los observadores la incrementan (ADR-0006) y las entradas viejas quedan huérfanas y se limpian solas al vencer su TTL.
 - **TTL.** 600 segundos para el listado y 3600 para las categorías. El TTL es una red de seguridad, no el mecanismo principal de invalidación: ese es la versión.
 - **Rehidratación.** `App\DTO\ProductSummary` reconstruye cada fila. Expone los mismos atributos públicos que el modelo (`name`, `formatted_price`, `is_in_stock`, `image_url`, `category`) y el método `thumbnailUrl()`, de modo que la card del catálogo funciona igual con un resumen que con un modelo. La vista del listado nunca ve un modelo Eloquent; la ficha de producto sigue usando el modelo, porque necesita la descripción completa y no se cachea.
 - **Paginación.** El paginador se reconstruye con `LengthAwarePaginator` a partir de los datos cacheados, conservando la query string de la request para que los enlaces de paginación mantengan los filtros aplicados.
-- **Las imágenes no se consultan en cada request.** La fila cacheada guarda la *versión* de la miniatura (el hash del original, ADR-0013) y los formatos disponibles: con esos dos datos la URL de la miniatura se arma sin tocar el disco. La comprobación de que el archivo exista se hace una sola vez, al llenar la caché.
+- **Las imágenes no se consultan en cada request.** La fila cacheada guarda la *versión* de la miniatura (el hash del original, ADR-0007) y los formatos disponibles: con esos dos datos la URL de la miniatura se arma sin tocar el disco. La comprobación de que el archivo exista se hace una sola vez, al llenar la caché.
 - **El catálogo y la ficha no comparten tipo de dato.** El catálogo filtrado es una lista repetida y barata de cachear; la ficha es una página por producto y nunca se cachea.
 
 ## Consecuencias

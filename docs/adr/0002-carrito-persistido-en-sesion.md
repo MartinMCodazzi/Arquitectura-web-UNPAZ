@@ -1,4 +1,4 @@
-# ADR-0004: El carrito de compras se persiste en la sesión
+# ADR-0002: El carrito de compras se persiste en la sesión
 
 * **Estado:** Aceptado
 * **Fecha:** 2026-10-22

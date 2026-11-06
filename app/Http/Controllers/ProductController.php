@@ -21,16 +21,16 @@ class ProductController extends Controller
     /**
      * Catálogo público con filtros aplicados desde la query string.
      *
-     * Desde ADR-0016 (reactividad con Livewire) el listado en sí lo renderiza
+     * Desde ADR-0009 (reactividad con Livewire) el listado en sí lo renderiza
      * el componente `App\Livewire\Catalog\Catalogo`, que consume el mismo
      * CatalogService que este controlador. Acá quedan las responsabilidades
-     * de página: el redirect canónico del formulario de filtros (ADR-0011) y
-     * los metadatos SEO del `<head>` (ADR-0014).
+     * de página: el redirect canónico del formulario de filtros y los
+     * metadatos SEO del `<head>`.
      */
     public function index(Request $request): View|RedirectResponse
     {
         // El formulario de filtros escribe los precios en pesos (legibles para
-        // el usuario); la URL canónica los lleva en céntimos (ADR-0002). Se
+        // el usuario); la URL canónica los lleva en céntimos. Se
         // redirige para tener una sola URL por combinación de filtros.
         if ($this->hasPriceFormFields($request)) {
             return redirect()->route('productos.index', $this->canonicalQuery($request));
@@ -54,7 +54,7 @@ class ProductController extends Controller
         abort_unless($product->is_active, 404);
 
         // Eager loading explícito: el guardia de lazy loading de Laravel 13
-        // no cubre el modelo único (ADR-0009).
+        // no cubre el modelo único.
         $product->load('category');
 
         $relatedProducts = Product::query()
@@ -77,7 +77,7 @@ class ProductController extends Controller
     /**
      * Imagen destacada para OpenGraph: el primer producto de la primera página
      * del listado, leído directamente de la caché del catálogo (sin consultar
-     * la base cuando la entrada ya está cacheada, ADR-0015).
+     * la base cuando la entrada ya está cacheada, ADR-0008).
      */
     private function ogImage(ProductFilters $filters, int $perPage): ?string
     {
@@ -95,7 +95,7 @@ class ProductController extends Controller
      * URL canónica del catálogo con los filtros normalizados.
      *
      * La página 1 se declara sin el parámetro `page` para que exista una sola
-     * URL por combinación de filtros (ADR-0006).
+     * URL por combinación de filtros (ADR-0004).
      */
     private function catalogCanonical(ProductFilters $filters, int $page): string
     {
@@ -119,8 +119,8 @@ class ProductController extends Controller
     /**
      * Traduce los parámetros del formulario a la query string canónica.
      *
-     * Los precios del formulario van en pesos y los de la URL en céntimos
-     * (ADR-0002); el resto de los parámetros ya usa los nombres canónicos.
+     * Los precios del formulario van en pesos y los de la URL en céntimos;
+     * el resto de los parámetros ya usa los nombres canónicos.
      *
      * @return array<string, mixed>
      */

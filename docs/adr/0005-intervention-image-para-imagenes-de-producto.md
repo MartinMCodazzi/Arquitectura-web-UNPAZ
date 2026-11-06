@@ -1,4 +1,4 @@
-# ADR-0007: intervention/image para el tratamiento de imágenes de producto
+# ADR-0005: intervention/image para el tratamiento de imágenes de producto
 
 * **Estado:** Aceptado
 * **Fecha:** 2026-10-22

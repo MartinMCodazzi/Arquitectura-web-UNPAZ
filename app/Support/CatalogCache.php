@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * Caché del catálogo con claves versionadas (ver ADR-0008 y ADR-0010).
+ * Caché del catálogo con claves versionadas (ver ADR-0006).
  *
  * El driver `database` no soporta "cache tags", por lo que la invalidación
  * se hace incrementando una versión global del catálogo: las claves viejas

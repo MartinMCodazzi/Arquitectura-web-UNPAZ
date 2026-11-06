@@ -1,4 +1,4 @@
-# ADR-0006: Los filtros del catálogo se implementan como scopes locales de Eloquent
+# ADR-0004: Los filtros del catálogo se implementan como scopes locales de Eloquent
 
 * **Estado:** Aceptado
 * **Fecha:** 2026-10-22

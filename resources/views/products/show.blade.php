@@ -103,7 +103,7 @@
 
                 <div class="border-t border-gray-200 pt-6 dark:border-gray-700">
                     @if ($product->is_in_stock)
-                        {{-- Agregar al carrito reactivo (ADR-0017): la ficha
+                        {{-- Agregar al carrito reactivo (ADR-0010): la ficha
                              muestra el selector de cantidad; el fallback sin JS
                              vive dentro del componente. --}}
                         <livewire:cart.add-to-cart-button

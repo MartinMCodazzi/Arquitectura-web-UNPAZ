@@ -11,21 +11,21 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 /**
- * Catálogo público reactivo (ADR-0016).
+ * Catálogo público reactivo (ADR-0009).
  *
  * Los filtros viven en la query string como en la versión server-rendered
- * (ADR-0006/0011): son propiedades `#[Url]` con los nombres canónicos
+ * (ADR-0004): son propiedades `#[Url]` con los nombres canónicos
  * (`categoria`, `buscar`, `precio_min`, `precio_max`, `orden`, `solo_stock`),
  * de modo que cada combinación sigue siendo compartible e indexable.
  *
- * Los precios viajan y se normalizan en céntimos canónicos (ADR-0002); los
+ * Los precios viajan y se normalizan en céntimos canónicos; los
  * inputs del formulario muestran pesos enteros, así que cada precio tiene dos
  * propiedades sincronizadas: `precioMin/precioMax` (URL, céntimos) y
  * `precioMinPesos/precioMaxPesos` (UI). Sólo las de la UI reciben updates del
  * cliente, por eso no hay loops de reactividad.
  *
  * El listado sale de CatalogService (mismo código que la versión sin
- * JavaScript), que reutiliza CatalogCache y ProductSummary (ADR-0015).
+ * JavaScript), que reutiliza CatalogCache y ProductSummary (ADR-0008).
  */
 class Catalogo extends Component
 {
@@ -79,8 +79,8 @@ class Catalogo extends Component
 
     public function mount(): void
     {
-        // La URL viaja en céntimos (ADR-0002) y éstos normalizan a múltiplos
-        // de peso (ADR-0006), así que la división es exacta.
+        // La URL viaja en céntimos y éstos normalizan a múltiplos
+        // de peso (ADR-0004), así que la división es exacta.
         $this->precioMinPesos = $this->precioMin !== null ? intdiv($this->precioMin, 100) : null;
         $this->precioMaxPesos = $this->precioMax !== null ? intdiv($this->precioMax, 100) : null;
     }

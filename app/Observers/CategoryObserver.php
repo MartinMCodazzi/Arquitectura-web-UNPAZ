@@ -6,7 +6,7 @@ use App\Models\Category;
 use App\Support\CatalogCache;
 
 /**
- * Invalida la caché del catálogo cuando cambia una categoría (ver ADR-0008).
+ * Invalida la caché del catálogo cuando cambia una categoría (ver ADR-0006).
  */
 class CategoryObserver
 {

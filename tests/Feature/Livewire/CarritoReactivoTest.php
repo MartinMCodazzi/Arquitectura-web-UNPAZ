@@ -11,11 +11,11 @@ use Livewire\Livewire;
 
 /*
 |--------------------------------------------------------------------------
-| Carrito reactivo con Livewire (ADR-0017)
+| Carrito reactivo con Livewire (ADR-0010)
 |--------------------------------------------------------------------------
 |
 | La única frontera de escritura del carrito sigue siendo CartService
-| (ADR-0004); estos tests garantizan que las piezas Livewire respetan esa
+| (ADR-0002); estos tests garantizan que las piezas Livewire respetan esa
 | frontera, que el feedback correcto se muestra y que el evento
 | `carrito-actualizado` conecta el contador del header.
 |

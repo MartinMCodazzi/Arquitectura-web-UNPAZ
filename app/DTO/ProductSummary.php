@@ -11,7 +11,7 @@ use Illuminate\Support\Number;
  * Resumen de producto para el listado del catálogo.
  *
  * Es el objeto que consume la vista del catálogo. Cuando el listado sale de la
- * caché hay que rehidratar un array plano (ADR-0010) y cuando sale de la base
+ * caché hay que rehidratar un array plano (ADR-0006) y cuando sale de la base
  * se convierte el modelo Eloquent: en los dos casos la vista recibe un
  * `ProductSummary`.
  *

@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Session;
 
 /**
- * Carrito de compras persistido en la sesión (ver ADR-0004).
+ * Carrito de compras persistido en la sesión (ver ADR-0002).
  *
  * La sesión guarda un array plano `{ product_id: cantidad }`: sólo
  * identificadores y cantidades enteras, nunca objetos. Este servicio es la
@@ -141,7 +141,7 @@ class CartService
      * Líneas del carrito con los productos resueltos.
      *
      * Los productos que fueron borrados, desactivados o quedaron sin stock
-     * se descartan y se limpian de la sesión (ADR-0004).
+     * se descartan y se limpian de la sesión (ADR-0002).
      *
      * @return Collection<int, CartLine>
      */

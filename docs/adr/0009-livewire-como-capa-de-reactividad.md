@@ -1,4 +1,4 @@
-# ADR-0016: Livewire como capa de reactividad del sitio
+# ADR-0009: Livewire como capa de reactividad del sitio
 
 * **Estado:** Aceptado
 * **Fecha:** 2026-10-23
@@ -6,9 +6,9 @@
 
 ## Contexto
 
-Hasta ahora el sitio público funcionaba 100 % server-rendered sin JavaScript
-(ADRs 0011 y 0012): los filtros viajaran por query string con un redirect
-canónico y el carrito se manipulaba con formularios HTML. Ese diseño garantiza
+Hasta ahora el sitio público funcionaba 100 % server-rendered sin JavaScript:
+los filtros viajaban por query string con un redirect canónico y el carrito se
+manipulaba con formularios HTML. Ese diseño garantiza
 indexabilidad y simplicidad, pero penaliza la experiencia interactiva:
 
 * cada cambio de filtro o de cantidad es un round-trip completo de página,
@@ -39,8 +39,8 @@ Toda la interactividad dinámica del sitio se implementa con **Livewire 3**
   Breeze), con vistas Blade en `resources/views/livewire`;
 * la lógica de negocio no vive en el componente: se delega en los servicios
   existentes (`CartService`, `CatalogService`, `CatalogCache`), de modo que el
-  carrito sigue escribiendo sólo en `CartService` (ADR-0004) y el listado
-  sigue consumiendo la caché de datos planos (ADRs 0008, 0010, 0015);
+  carrito sigue escribiendo sólo en `CartService` (ADR-0002) y el listado
+  sigue consumiendo la caché de datos planos (ADRs 0006 y 0008);
 * la comunicación entre componentes (contador del header, alerts) se hace con
   events (`$this->dispatch('carrito-actualizado')`, `#[On(...)]`), no con
   estado global;
@@ -50,7 +50,7 @@ Toda la interactividad dinámica del sitio se implementa con **Livewire 3**
 
 Piezas reactivas en esta fase: contador del carrito del header, botón
 "Agregar al carrito", página del carrito y catálogo con filtros y paginación
-(que conservan la query string, ver ADR-0017 y ADR-0011).
+(que conservan la query string, ver ADR-0010).
 
 ### Componentes reutilizables
 
@@ -76,7 +76,7 @@ absorbe en `x-store.product-card`.
 
 - El sitio público ya no funciona sin JavaScript en las piezas reactivas: se
   conservan los endpoints HTTP y fallas declaradas en `<noscript>` como
-  degeneración sin JS (ver ADR-0017).
+  degeneración sin JS (ver ADR-0010).
 - Cada interacción es una request HTTP (Livewire hace round-trips): en
   hardware lento la latencia se siente; se mitiga con `debounce` en los inputs.
 - El contador del carrito y los filtros sincronizan la URL vía Livewire; el

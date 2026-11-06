@@ -11,7 +11,7 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Interfaces\ImageInterface;
 
 /**
- * Generación y publicación de las miniaturas de producto (ver ADR-0007).
+ * Generación y publicación de las miniaturas de producto (ver ADR-0005).
  *
  * El servicio trabaja sobre el disco `public`: la imagen original queda en
  * `products/{id}/original.{ext}` y las miniaturas en

@@ -7,7 +7,7 @@ use Livewire\Livewire;
 
 /*
 |--------------------------------------------------------------------------
-| Integración de componentes Livewire en las páginas públicas (ADR-0016)
+| Integración de componentes Livewire en las páginas públicas (ADR-0009)
 |--------------------------------------------------------------------------
 |
 | El layout público monta el contador del carrito; el catálogo, el

@@ -4,7 +4,7 @@
 
 {{-- Card reutilizable del catálogo: los dos consumidores son el listado del
      catálogo y los productos relacionados de la ficha. `product` es un
-     `ProductSummary` (listado, ADR-0015) o un modelo `Product` (ficha): los
+     `ProductSummary` (listado, ADR-0008) o un modelo `Product` (ficha): los
      dos exponen los mismos atributos públicos usados acá. --}}
 
 <article class="group relative flex flex-col overflow-hidden rounded-xl border border-gray-800 bg-gray-900/90 shadow-lg transition duration-200 hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-orange-500/10 hover:shadow-2xl">

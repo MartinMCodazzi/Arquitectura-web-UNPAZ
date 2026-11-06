@@ -1,14 +1,12 @@
-# ADR-0010: La caché del catálogo guarda datos planos, no modelos Eloquent
+# ADR-0006: La caché del catálogo guarda datos planos, no modelos Eloquent
 
 * **Estado:** Aceptado
 * **Fecha:** 2026-10-22
 * **Autor:** Martin Munoz Codazzi
 
-*Reemplaza a [ADR-0008](0008-cache-del-catalogo-con-claves-versionadas.md), cuyo mecanismo de claves versionadas y sin *cache tags* se mantiene; lo que cambia es el formato de lo que se guarda en caché.*
-
 ## Contexto
 
-Al implementar la caché de categorías prevista en ADR-0008, el sitio falló con:
+Al implementar la caché de categorías, el sitio falló con:
 
 ```
 App\Support\CatalogCache::categories(): Return value must be of type
@@ -35,7 +33,7 @@ Alternativas evaluadas:
 
 **En la caché sólo se guardan datos planos (arrays y escalares).** Los modelos Eloquent nunca se cachean.
 
-- `App\Support\CatalogCache` es el único punto de acceso a la caché del catálogo. Mantiene el mecanismo de ADR-0008: claves versionadas (`catalogo.categorias.v{N}`), TTL e invalidación por observadores de Eloquent (`ProductObserver` y `CategoryObserver` incrementan la versión).
+- `App\Support\CatalogCache` es el único punto de acceso a la caché del catálogo. Mantiene el mecanismo de claves versionadas (`catalogo.categorias.v{N}`), TTL e invalidación por observadores de Eloquent (`ProductObserver` y `CategoryObserver` incrementan la versión).
 - La versión se guarda con `Cache::forever('catalogo.version', ...)`, que es un entero y por lo tanto es seguro serializar.
 - Las categorías se guardan como `list<array{id: int, name: string, slug: string}>`. Al leerlas se rehidratan en `App\DTO\CategoryOption` (objeto *value object* de sólo lectura) con `CategoryOption::fromArray()`.
 - `CatalogCache::categories()` **valida la forma de lo que lee**: si la entrada cacheada no es un array (por ejemplo, una entrada vieja escrita por una versión anterior del código que guardaba modelos), la descarta y la vuelve a construir. Esto hace que el despliegue de este cambio no requiera borrar la caché a mano.

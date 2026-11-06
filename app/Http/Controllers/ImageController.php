@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
  * `Cache-Control` explícito: el nombre del archivo incluye la versión de la
  * imagen original, así que la URL cambia cuando la imagen cambia y la
  * miniatura puede cachearse durante un año sin riesgo de servir una versión
- * vieja (ver ADR-0007).
+ * vieja (ver ADR-0005).
  */
 class ImageController extends Controller
 {

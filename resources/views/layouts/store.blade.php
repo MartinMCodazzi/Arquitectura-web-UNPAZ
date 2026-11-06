@@ -22,7 +22,7 @@
             <meta name="description" content="{{ $description }}">
         @endif
 
-        {{-- URL canónica: una sola URL por página (ADR-0014). --}}
+        {{-- URL canónica: una sola URL por página. --}}
         <link rel="canonical" href="{{ $canonical }}">
 
         {{-- OpenGraph y Twitter Card: cómo se ve la página cuando se comparte. --}}
@@ -54,7 +54,7 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        {{-- El sitio público no carga resources/js/app.js (ADR-0016): la
+        {{-- El sitio público no carga resources/js/app.js (ADR-0009): la
              reactividad la aporta Livewire con sus propios assets, que se
              cargan al cierre del body con @livewireScripts. --}}
         @vite(['resources/css/app.css'])

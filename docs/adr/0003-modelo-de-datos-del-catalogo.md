@@ -1,4 +1,4 @@
-# ADR-0005: Modelo de datos del catálogo (categorías y productos)
+# ADR-0003: Modelo de datos del catálogo (categorías y productos)
 
 * **Estado:** Aceptado
 * **Fecha:** 2026-10-22
@@ -46,7 +46,7 @@ Alternativas evaluadas:
 | `name`         | `string`                   |                                              |
 | `slug`         | `string` unique            | Clave natural y clave de ruta                |
 | `description`  | `text` nullable            |                                              |
-| `price`        | `unsignedBigInteger`       | Céntimos ARS (ver ADR-0002)                  |
+| `price`        | `unsignedBigInteger`       | Céntimos ARS                                 |
 | `stock`        | `unsignedInteger` default 0 | Units disponibles                           |
 | `image_path`   | `string` nullable          | Ruta relativa en `storage/app/public`        |
 | `category_id`  | `foreignId`                | FK a `categories`, `restrictOnDelete()`      |
@@ -78,5 +78,5 @@ Alternativas evaluadas:
 
 - `is_active` no guarda quién desactivó ni cuándo: para auditoría haría falta una tabla de historial.
 - Con `is_active` no hay "papelera": un producto desactivado sigue occupying espacio y no se puede purgar. Es aceptable a esta escala.
-- La búsqueda por texto (`LIKE '%término%'`) no puede usar índices en SQLite ni MySQL sin un índice FULLTEXT: a escala grande es el principal punto débil del catálogo (ver ADR-0006).
+- La búsqueda por texto (`LIKE '%término%'`) no puede usar índices en SQLite ni MySQL sin un índice FULLTEXT: a escala grande es el principal punto débil del catálogo (ver ADR-0004).
 - Si en el futuro se necesitan varias imágenes por producto, `image_path` alcanza: habría que migrar a `product_images`.

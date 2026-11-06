@@ -1,7 +1,7 @@
 @use(App\DTO\ProductFilters)
 @use(Illuminate\Support\Str)
 
-{{-- Catálogo reactivo (ADR-0016). El server render inicial ya muestra el
+{{-- Catálogo reactivo (ADR-0009). El server render inicial ya muestra el
      listado completo con los filtros de la URL; después, cada cambio de
      filtro actualiza la grilla sin recargar. --}}
 
@@ -110,7 +110,7 @@
     </div>
 
     {{-- Fallback sin JavaScript: formulario GET clásico con el redirect
-         canónico de ADR-0011 (precios en pesos → URL en céntimos). --}}
+         canónico (precios en pesos → URL en céntimos). --}}
     <noscript>
         <form method="GET"
               action="{{ route('productos.index') }}"

@@ -9,7 +9,7 @@ use App\Models\Category;
  *
  * Existe porque la caché de Laravel 13 no deserializa clases PHP
  * (`cache.serializable_classes => false`): lo que se guarda en caché son
- * arrays planos y los objetos se rehidratan en memoria (ver ADR-0010).
+ * arrays planos y los objetos se rehidratan en memoria (ver ADR-0006).
  */
 final readonly class CategoryOption
 {

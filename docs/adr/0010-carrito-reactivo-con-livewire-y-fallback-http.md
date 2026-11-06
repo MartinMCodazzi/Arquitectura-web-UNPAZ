@@ -1,4 +1,4 @@
-# ADR-0017: Carrito reactivo con Livewire (fallback HTTP sin JavaScript)
+# ADR-0010: Carrito reactivo con Livewire (fallback HTTP sin JavaScript)
 
 * **Estado:** Aceptado
 * **Fecha:** 2026-10-23
@@ -6,9 +6,9 @@
 
 ## Contexto
 
-El ADR-0012 definió que el carrito se manipulaba únicamente con formularios
-HTML contra endpoints HTTP: agregar, cambiar cantidad, remover y vaciar eran
-peticiones POST/PATCH/DELETE con CSRF. Con la decisión del ADR-0016 de
+La decisión anterior definió que el carrito se manipulaba únicamente con
+formularios HTML contra endpoints HTTP: agregar, cambiar cantidad, remover y
+vaciar eran peticiones POST/PATCH/DELETE con CSRF. Con la decisión del ADR-0009 de
 introducir reactividad en la web entera, ese modelo de interacción queda
 superado: cada acción obligaba a recargar la página y el contador del header
 sólo reflejaba el estado al recargar.
@@ -16,8 +16,8 @@ sólo reflejaba el estado al recargar.
 Restricciones que debía preservar la nueva solución:
 
 * el carrito sigue viviendo en la sesión y su única frontera de escritura es
-  `CartService` (ADR-0004);
-* los precios siguen en céntimos y el feedback usa es_AR/ARS (ADRs 0002/0003);
+  `CartService` (ADR-0002);
+* los precios siguen en céntimos y el feedback usa es_AR/ARS;
 * el sitio debe seguir funcionando para un usuario sin JavaScript (requisito
   original del trabajo práctico).
 
@@ -44,7 +44,7 @@ Complementario (no excluyente) queda el fallback sin JavaScript:
   rutas: Livewire y los endpoints HTTP escriben por el mismo servicio, así que
   no hay dos fuentes de verdad.
 
-Reemplaza el ADR-0012, que queda marcado como `Reemplazado`.
+Reemplaza la decisión anterior de manipular el carrito sólo con formularios HTML.
 
 ## Consecuencias
 

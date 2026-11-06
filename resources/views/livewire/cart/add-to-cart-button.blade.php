@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    {{-- Fallback sin JavaScript (ADR-0017): el mismo POST contra el endpoint
+    {{-- Fallback sin JavaScript (ADR-0010): el mismo POST contra el endpoint
          HTTP del carrito, ejecutado con formularios HTML normales. --}}
     <noscript>
         <form method="POST" action="{{ route('carrito.agregar') }}" class="mt-3">

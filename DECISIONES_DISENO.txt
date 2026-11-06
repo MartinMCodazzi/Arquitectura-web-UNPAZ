@@ -52,7 +52,7 @@ REGLAS DERIVADAS (aplican a este repositorio concreto):
   R7. Toda vista Blade de listado usa eager loading explícito; en
       desarrollo `Model::preventLazyLoading()` está activo y delata N+1.
       OJO: en Laravel 13 ese guardia NO cubre el modelo único
-      (ver ADR-0009) → el `with()` es obligatorio siempre.
+      (limitación del framework) → el `with()` es obligatorio siempre.
   R8. El código se formatea con Laravel Pint (`vendor/bin/pint --dirty`).
   R9. Los tests se escriben con Pest. No se borran tests existentes sin
       aprobación del usuario.
@@ -62,12 +62,12 @@ REGLAS DERIVADAS (aplican a este repositorio concreto):
       contador del header, paginado de listados) se implementa con Livewire 3:
       componentes class-based en app/Livewire, vistas en
       resources/views/livewire, lógica delegada en los servicios existentes
-      (ver ADR-0016). Sin JavaScript ad-hoc ni SPA; Alpine sólo para detalles
+      (ver ADR-0009). Sin JavaScript ad-hoc ni SPA; Alpine sólo para detalles
       de UI local.
   R12. Antes de crear una vista, partial o componente nuevo se revisan los
       componentes existentes; las piezas repetidas (cards, precios, badges,
       alertas) se extraen a componentes Blade reutilizables con props tipadas
-      en resources/views/components/store/ (ver ADR-0016).
+      en resources/views/components/store/ (ver ADR-0009).
   R13. Los tests se escriben y actualizan como parte de la tarea, pero NO se
       corren automáticamente al terminar de programar: al devolver el
       resultado se avisa al usuario, que decide ejecutarlos a mano
@@ -266,13 +266,13 @@ Contexto:
 Decisión:
   - Migraciones: create_categories_table (2026_10_22_002836) y
     create_products_table (2026_10_22_002837). Columnas, tipos, índices
-    compuestos y claves foráneas según ADR-0005.
+    compuestos y claves foráneas según ADR-0003.
   - Modelos App\Models\Category y App\Models\Product con atributos de clase
     #[Fillable], #[RouteKey('slug')], casts explícitos, relaciones tipadas y
     scopes #[Scope] (active, inStock, inCategory, priceBetween, search,
     sortedBy) más los accessors formatted_price, is_in_stock e image_url.
     Los filtros con scope local en lugar de Pipeline o Query Builder propio
-    están justificados en ADR-0006.
+    están justificados en ADR-0004.
   - Factories CategoryFactory y ProductFactory con estados reutilizables
     (inactivo, sin stock, etc.) y seeders CategorySeeder (7 categorías) y
     ProductSeeder (46 productos), idempotentes vía updateOrCreate.
@@ -296,7 +296,7 @@ Motivación técnica:
     DESCUBIERTA: en Laravel 13.38 el Builder::hydrate() sólo asigna la
     bandera cuando el resultado tiene más de una fila, de modo que la página
     de detalle (modelo único) NO queda protegida → el eager loading se hace
-    siempre de forma explícita (ADR-0009).
+    siempre de forma explícita.
 
 Alternativas descartadas:
   - SoftDeletes: mezcla baja lógica con baja física y agrega un global scope
@@ -312,7 +312,7 @@ Estado verificado:
   php artisan migrate:fresh --seed → 7 categorías, 46 productos, 1 usuario.
   php artisan db:seed (repetido) → sin duplicados.
 
-ADR: docs/adr/0002, 0003, 0005, 0006, 0009 (docs/adr/README.md)
+ADR: docs/adr/0003, 0004 (docs/adr/README.md)
 
 
 --------------------------------------------------------------------------------
@@ -321,7 +321,7 @@ ADR: docs/adr/0002, 0003, 0005, 0006, 0009 (docs/adr/README.md)
 Contexto:
   Primera versión navegable de la tienda: listado paginado, ficha de producto
   y filtros combinables. La URL tenía que seguir siendo la fuente del estado
-  del catálogo (ADR-0006) y el listado tenía que servirse desde el servidor.
+  del catálogo (ADR-0004) y el listado tenía que servirse desde el servidor.
 
 Decisión:
   - DTO App\DTO\ProductFilters: normaliza la query string (categoria, precio_min,
@@ -346,7 +346,7 @@ Decisión:
   - El formulario de filtros es un GET simple y SIN JavaScript: los campos de
     precio se escriben en pesos (legibles para el usuario) y viajan en la URL
     con el sufijo _pesos; el controlador responde con un 302 hacia la URL
-    canónica, que ya lleva los céntimos (ADR-0011).
+    canónica, que ya lleva los céntimos.
 
 Motivación técnica:
   - El DTO separa la capa HTTP de la capa de consulta: el modelo no conoce el
@@ -361,7 +361,7 @@ Motivación técnica:
   - La caché de categorías evita una consulta por cada visita al catálogo; se
     invalida desde los observadores y no desde cada punto de uso.
 
-INCIDENTE Y CORRECCIÓN (documentado como ADR-0010):
+INCIDENTE Y CORRECCIÓN (documentado como ADR-0006):
   La caché del catálogo falló en el entorno real con
   "__PHP_Incomplete_Class returned". Causa: en Laravel 13,
   config/cache.php trae 'serializable_classes' => false, por lo que la caché
@@ -372,7 +372,7 @@ INCIDENTE Y CORRECCIÓN (documentado como ADR-0010):
   Corrección: en la caché sólo se guardan datos planos (arrays) y los objetos
   se rehidratan en memoria con el DTO App\DTO\CategoryOption. La lectura
   valida la forma del payload y descarta entradas obsoletas.
-  Consecuencia: ADR-0008 pasa a "Reemplazado" y queda vigente ADR-0010.
+  Consecuencia: la decisión vigente queda registrada en ADR-0006.
 
 SEGUNDO HALLAZGO: el proyecto NO tiene Alpine.js
   La primera versión del formulario convertía los pesos a céntimos con un
@@ -383,7 +383,7 @@ SEGUNDO HALLAZGO: el proyecto NO tiene Alpine.js
   formulario habría enviado pesos donde la URL espera céntimos, filtrando mal
   y sin avisar.
   Por eso el filtrado por precio NO depende de JavaScript: el servidor
-  redirige (302) a la URL canónica, que ya lleva los céntimos (ADR-0011).
+  redirige (302) a la URL canónica, que ya lleva los céntimos.
 
 Alternativas descartadas:
   - Filtrar con JavaScript en el cliente: el HTML inicial no traería los
@@ -394,8 +394,9 @@ Alternativas descartadas:
   - Livewire para el formulario de filtros: para un formulario GET con cinco
     campos, la redirección canónica del servidor es más simple, no carga
     JavaScript y mantiene el renderizado en servidor.
-  - Guardar los precios en la URL en pesos: contradice ADR-0002 y multiplicar
-    por 100 en dos lugares (URL y consulta) es una fuente clásica de errores.
+  - Guardar los precios en la URL en pesos: contradice la convención de precios
+    en céntimos y multiplicar por 100 en dos lugares (URL y consulta) es una
+    fuente clásica de errores.
   - Habilitar cache.serializable_classes => true: desactiva la protección
     contra gadget chains que Laravel 13 activa por defecto.
   - Resolver la categoría en una consulta aparte para obtener su id: se
@@ -418,7 +419,7 @@ Pendiente:
     estrategia de performance.
   - Botón "Agregar al carrito" en la ficha: Tarea 3.
 
-ADR: docs/adr/0006, 0008 (reemplazado), 0010, 0011 (docs/adr/README.md)
+ADR: docs/adr/0004, 0006 (docs/adr/README.md)
 
 
 --------------------------------------------------------------------------------
@@ -426,7 +427,7 @@ ADR: docs/adr/0006, 0008 (reemplazado), 0010, 0011 (docs/adr/README.md)
 --------------------------------------------------------------------------------
 Contexto:
   El carrito es el primer estado mutable de la tienda. El proyecto ya tenía
-  definido dónde vive (ADR-0004: sesión, array plano { id => cantidad }) y
+  definido dónde vive (ADR-0002: sesión, array plano { id => cantidad }) y
   faltaba decidir CÓMO se lo manipula desde la interfaz. El dato relevante del
   stack: Livewire 3 y Volt están instalados como dependencias PHP, pero NO hay
   Alpine.js en package.json (Alpine viaja dentro del bundle de Livewire y sólo
@@ -436,7 +437,7 @@ Decisión:
   - App\Services\CartService es la única frontera que escribe en la sesión
     (clave "carrito"). Expone: items(), add(), update(), remove(), clear(),
     isEmpty(), count(), lines(), subtotal(), taxes(), total(), totals().
-  - El servicio resuelve los datos faltantes al leer (ADR-0004): las líneas de
+  - El servicio resuelve los datos faltantes al leer (ADR-0002): las líneas de
     productos borrados, desactivados o sin stock se descartan y se limpian de
     la sesión; las cantidades se limitan al stock vigente.
   - App\DTO\CartLine: producto + cantidad + subtotal (en céntimos) de cada
@@ -446,7 +447,7 @@ Decisión:
     en el servicio; los mensajes flash distinguyen success / warning / error.
   - Rutas en español: GET /carrito, POST /carrito/agregar,
     PATCH /carrito/{product}, DELETE /carrito/{product}, DELETE /carrito/vaciar.
-  - La interacción es con formularios HTML contra endpoints HTTP (ADR-0012):
+  - La interacción es con formularios HTML contra endpoints HTTP:
     sin Livewire, sin Alpine y sin JavaScript en todo el sitio público. Los
     formularios llevan @csrf y @method para el verbo HTTP real.
   - El badge del carrito en el encabezado no es reactivo: StoreLayout::render()
@@ -462,7 +463,7 @@ Alternativas descartadas:
     y el carrito dejaría de funcionar sin JavaScript.
   - fetch desde el cliente: JavaScript a mano, sin protección CSRF por defecto
     y con estado duplicado entre cliente y servidor.
-  - Tablas carts/cart_items: ya descartadas en ADR-0004; la tienda es mínima y
+  - Tablas carts/cart_items: ya descartadas en ADR-0002; la tienda es mínima y
     opera con visitantes no autenticados.
   - Validar el stock sólo en la vista: la vista no es una frontera de confianza;
     el servicio lo limita siempre (y el stock puede cambiar entre requests).
@@ -483,7 +484,7 @@ Pendiente:
     extensión php8.3-gd en el entorno).
   - Tarea 5: caché del listado filtrado, sitemap, OpenGraph y performance.
 
-ADR: docs/adr/0004, 0012 (docs/adr/README.md)
+ADR: docs/adr/0002 (docs/adr/README.md)
 
 
 --------------------------------------------------------------------------------
@@ -493,7 +494,7 @@ Contexto:
   El catálogo necesitaba imágenes reales: hasta ahora products.image_path era
   nullable y los seeders lo dejaban en null, así que el listado mostraba el
   texto alternativo. El requisito de performance pide miniaturas optimizadas
-  en formatos modernos, cacheadas en disco. ADR-0007 ya había decidido la
+  en formatos modernos, cacheadas en disco. ADR-0005 ya había decidido la
   librería (intervention/image v4 con GD) y los anchos; faltaba materializar
   el pipeline y decidir cómo se sirve el cacheo.
 
@@ -557,7 +558,7 @@ Pendiente:
     y canonical, y ajuste fino de performance.
   - Tarea 6: suite de tests completa y cierre.
 
-ADR: docs/adr/0007, 0013 (docs/adr/README.md)
+ADR: docs/adr/0005, 0007 (docs/adr/README.md)
 
 
 --------------------------------------------------------------------------------
@@ -566,7 +567,7 @@ ADR: docs/adr/0007, 0013 (docs/adr/README.md)
 Contexto:
   La Tarea 5 cierra el bloque de performance y SEO del roadmap. Faltaban dos
   cosas. La primera: la página más solicitada del sitio, el listado del
-  catálogo, seguía consultando la tabla de productos en cada request. ADR-0010
+  catálogo, seguía consultando la tabla de productos en cada request. ADR-0006
   ya había resuelto el problema de fondo (en Laravel 13 la caché no deserializa
   clases PHP, así que lo que se guarda son arrays planos), pero faltaba decidir
   QUÉ se cachea del listado y CÓMO se reconstruye la paginación. La segunda:
@@ -578,11 +579,11 @@ Decisión:
     es versionada: catalogo.productos.v{version}.{huella}, donde la huella es
     el SHA-1 de los filtros normalizados, la página y el tamaño de página. El
     TTL es de 600 segundos como red de seguridad: la invalidación real es la
-    versión del catálogo (ADR-0008), que incrementan los observadores de
+    versión del catálogo (ADR-0006), que incrementan los observadores de
     Product y Category.
   - El payload es plano: total + items (cada item con id, name, slug, price,
     stock, category, image_version e image_formats). Nunca modelos Eloquent:
-    al releerlos quedarían como __PHP_Incomplete_Class (ADR-0010).
+    al releerlos quedarían como __PHP_Incomplete_Class (ADR-0006).
   - App\DTO\ProductSummary rehidrata cada fila. Expone los mismos atributos
     públicos que el modelo (name, formatted_price, is_in_stock, image_url,
     category) y el método thumbnailUrl(), de modo que la card del catálogo
@@ -590,7 +591,7 @@ Decisión:
   - El paginador se reconstruye con LengthAwarePaginator a partir de los datos
     cacheados, conservando la query string de la request para que los enlaces
     de paginación mantengan los filtros aplicados.
-  - La versión de la miniatura (el hash del original, ADR-0013) y los formatos
+  - La versión de la miniatura (el hash del original, ADR-0007) y los formatos
     disponibles viajan en la fila cacheada: la URL de la imagen se arma sin
     tocar el disco en cada request. La comprobación de que el archivo exista se
     hace una sola vez, al llenar la caché.
@@ -610,7 +611,7 @@ Decisión:
     recibe title, description, canonical, image y type.
   - La URL canónica de cada página: la ficha, su propia URL; el carrito, su
     propia URL; el catálogo, la URL con los filtros normalizados (la misma que
-    usa la redirección canónica del formulario, ADR-0011). La página 1 se
+    usa la redirección canónica del formulario). La página 1 se
     declara sin el parámetro page, para que exista una sola URL por
     combinación de filtros.
   - El tipo OpenGraph es website en el catálogo y product en la ficha. La
@@ -629,7 +630,7 @@ Alternativas descartadas:
     puede invalidar de forma selectiva y envejece con datos viejos.
   - Cachear sólo los identificadores y volver a consultar: no ahorra la
     consulta que cuesta.
-  - Cachear los modelos Eloquent: ya descartado por ADR-0010.
+  - Cachear los modelos Eloquent: ya descartado por ADR-0006.
   - Dejar robots.txt como archivo estático: su contenido no puede depender del
     host, así que la línea Sitemap quedaría con un dominio fijo o ausente.
   - Mantener una imagen por defecto para OpenGraph: obligaría a versionar un
@@ -653,7 +654,7 @@ Pendiente:
   - Tarea 6: suite de tests completa, verificación de migrate:fresh --seed con
     las imágenes regeneradas y cierre del proyecto.
 
-ADR: docs/adr/0014, 0015 (docs/adr/README.md)
+ADR: docs/adr/0008 (docs/adr/README.md)
 
 
 --------------------------------------------------------------------------------
@@ -681,7 +682,8 @@ Decisión:
     carrito funcionan con formularios HTML.
   - Para que esa garantía sea literal, el layout público dejó de incluir
     resources/js/app.js (que estaba vacío) y carga sólo el CSS. Esto no es una
-    decisión nueva: implementa lo que ya pedían los ADR-0011 y ADR-0012. Los
+    decisión nueva: implementa lo que ya pedían las decisiones anteriores de
+    renderizado en servidor. Los
     layouts del panel y de la autenticación lo siguen incluyendo.
   - Se reemplazó el README de ejemplo de Laravel por un README del proyecto:
     requisitos, puesta en marcha, comandos, funcionalidades, rutas públicas,
@@ -723,8 +725,8 @@ Pendiente:
     correo.
 
 ADR: sin ADR nuevo (tarea de verificación y cierre). Las decisiones de la
-Tarea 5 están en los ADR 0014 y 0015, y las decisiones vigentes del proyecto
-son las de los ADR 0001 a 0015 (docs/adr/README.md)
+Tarea 5 están en el ADR 0008, y las decisiones vigentes del proyecto son las
+del índice docs/adr/README.md
 
 
 --------------------------------------------------------------------------------
@@ -733,17 +735,17 @@ son las de los ADR 0001 a 0015 (docs/adr/README.md)
 Contexto:
   Se pidió usar reactividad en la web entera y components reutilizables al
   armar el frontend, con Livewire como tecnología de reactividad. El sitio
-  público era 100 % server-rendered sin JavaScript (ADRs 0011 y 0012): filtros
-  por redirect canónico y carrito con formularios HTML, lo que hacía cada
-  acción un round-trip completo.
+  público era 100 % server-rendered sin JavaScript: filtros por redirect
+  canónico y carrito con formularios HTML, lo que hacía cada acción un
+  round-trip completo.
 
 Decisión:
-  - Se introduce Livewire 3 como capa de reactividad (ADR-0016), sin
+  - Se introduce Livewire 3 como capa de reactividad (ADR-0009), sin
     dependencias nuevas: componentes class-based en app/Livewire con vistas en
     resources/views/livewire, delegando la lógica en los servicios existentes
     (CartService, CatalogService, CatalogCache). El layout público carga
     @livewireScripts; Livewire gestiona sus propios assets.
-  - Carrito reactivo (ADR-0017, reemplaza al ADR-0012, que queda Reemplazado):
+  - Carrito reactivo (ADR-0010):
     CartCounter en el header (evento carrito-actualizado), AddToCartButton en
     card y ficha, y CartSummary para la página del carrito (cantidades con
     wire:model.live.debounce, quitar, vaciar, totales). Todos escriben por
@@ -752,11 +754,10 @@ Decisión:
   - Catálogo reactivo: componente App\Livewire\Catalog\Catalogo con filtros en
     `#[Url]` (categoria, buscar, precio_min, precio_max, orden, solo_stock en
     céntimos canónicos) y WithPagination, de modo que la query string sigue
-    siendo compartible e indexable (ADR-0006/0011). El redirect canónico del
-    formulario de precios en pesos (ADR-0011) sigue vigente para el flujo sin
-    JS. La obtención de la página del listado se extrae a
+    siendo compartible e indexable (ADR-0004). El redirect canónico del
+    formulario de precios en pesos sigue vigente para el flujo sin JS. La obtención de la página del listado se extrae a
     App\Services\CatalogService, compartida por el controlador y el
-    componente, reutilizando CatalogCache y ProductSummary (ADR-0015).
+    componente, reutilizando CatalogCache y ProductSummary (ADR-0008).
   - Componentes Blade reutilizables en resources/views/components/store/:
     price (precio en céntimos → ARS), stock-badge, alert y product-card, que
     absorbe el partial products/partials/card.blade.php (eliminado). El layout
@@ -776,7 +777,7 @@ Motivación técnica:
     en céntimos, eager loading, caché) se reaprovechan tal cual.
   - Evitar modelos Eloquent en props públicas de Livewire: la serialización
     de snapshots trabaja con datos planos y los DTOs ya son serializables
-    (ADR-0010).
+    (ADR-0006).
   - los endpoints HTTP se conservan porque la suite garantiza el modo sin
     JavaScript y el costo de mantenerlos es nulo (mismo backend).
 
@@ -788,7 +789,7 @@ Alternativas descartadas:
   - Volt (componentes single-file): no hay precedente en el repo y complica
     tests; se mantiene la convención class-based de Breeze.
   - Migrar el formulario de filtros 100 % a Livewire sin query string:
-    rompería ADR-0006 y 0011 (indexabilidad y URLs compartibles).
+    rompería ADR-0004 (indexabilidad y URLs compartibles).
 
 Estado verificado:
   - Pint aplicado a los archivos modificados; npm run build ejecutado
@@ -797,7 +798,7 @@ Estado verificado:
     nuevo modelo y tests nuevos de Livewire). NO se corrieron automáticamente:
     quedan a cargo del usuario (php artisan test), según regla R13.
 
-ADR: docs/adr/0016, docs/adr/0017 (0012 queda Reemplazado)
+ADR: docs/adr/0009, docs/adr/0010
 
 
 ================================================================================
@@ -849,8 +850,6 @@ Estado verificado:
   - Tests no ejecutados automáticamente según la regla persistente (a criterio
     del usuario con `php artisan test`).
 
-ADR: docs/adr/0018-rediseno-visual-gamer-y-checkout-en-carrito.md
-
 
 ================================================================================
 SESIÓN: 2026-11-04 — Catálogo Gamer/Tecnología y Solución en Entrega de Imágenes
@@ -895,5 +894,3 @@ Estado verificado:
   - Generación de miniaturas WebP/AVIF completada y verificada vía ImageController
     con HTTP 200 y Content-Type: image/webp.
   - Cumplimiento de reglas R1-R13 del proyecto.
-
-ADR: docs/adr/0019-catalogo-exclusivo-gamer-y-entrega-de-imagenes.md

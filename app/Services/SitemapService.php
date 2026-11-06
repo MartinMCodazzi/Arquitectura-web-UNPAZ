@@ -8,7 +8,7 @@ use App\Support\CatalogCache;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * Genera el sitemap XML del catálogo (ver ADR-0014).
+ * Genera el sitemap XML del catálogo.
  *
  * El sitemap se arma con los datos del catálogo y se cachea con la versión
  * vigente: cuando un producto o una categoría cambian, el observador

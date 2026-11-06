@@ -139,9 +139,9 @@
                     </button>
                 </div>
 
-                {{-- Fallback sin JavaScript (ADR-0017): las mismas operaciones
-                     contra los endpoints HTTP del carrito (ADR-0012), ahora en
-                     modo compacto. --}}
+                {{-- Fallback sin JavaScript (ADR-0010): las mismas operaciones
+                     contra los endpoints HTTP del carrito, ahora en modo
+                     compacto. --}}
                 <noscript>
                     <div class="mt-4 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
                         <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">

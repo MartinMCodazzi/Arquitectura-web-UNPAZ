@@ -67,7 +67,7 @@ class StoreLayout extends Component
      */
     public function render(): View
     {
-        // El contador del carrito es un componente Livewire (ADR-0017): el
+        // El contador del carrito es un componente Livewire (ADR-0010): el
         // layout no calcula estado de carrito por su cuenta.
         return view('layouts.store');
     }

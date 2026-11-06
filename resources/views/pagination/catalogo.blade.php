@@ -25,7 +25,7 @@
 
 {{-- Paginación híbrida: los anchors hacen funcionar los links sin JavaScript
      (GET con los filtros en la query string) y `wire:click.prevent` intercepta
-     el click para navegar entre páginas sin recargar (ADR-0016). --}}
+     el click para navegar entre páginas sin recargar (ADR-0009). --}}
 
 @if ($paginator->hasPages())
     <nav role="navigation" aria-label="Paginación del catálogo" class="flex flex-wrap items-center justify-center gap-1">

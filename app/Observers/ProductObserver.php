@@ -6,7 +6,7 @@ use App\Models\Product;
 use App\Support\CatalogCache;
 
 /**
- * Invalida la caché del catálogo cuando cambia un producto (ver ADR-0008).
+ * Invalida la caché del catálogo cuando cambia un producto (ver ADR-0006).
  */
 class ProductObserver
 {

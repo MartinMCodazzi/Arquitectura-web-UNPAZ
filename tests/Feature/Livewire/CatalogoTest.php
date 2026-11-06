@@ -7,11 +7,11 @@ use Livewire\Livewire;
 
 /*
 |--------------------------------------------------------------------------
-| Filtros reactivos del catálogo (ADR-0016)
+| Filtros reactivos del catálogo (ADR-0009)
 |--------------------------------------------------------------------------
 |
 | El componente mantiene los filtros en la query string con los nombres
-| canónicos en céntimos (ADR-0006/0011); los importes de la UI son pesos.
+| canónicos en céntimos (ADR-0004); los importes de la UI son pesos.
 | El listado consume CatalogService (mismo código que la versión sin JS).
 |
 */

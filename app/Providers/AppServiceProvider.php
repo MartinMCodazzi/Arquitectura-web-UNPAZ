@@ -26,11 +26,11 @@ class AppServiceProvider extends ServiceProvider
     {
         // En desarrollo falla la petición ante cualquier relación cargada de forma
         // perezosa: es la forma más barata de detectar problemas de N+1.
-        // OJO: en Laravel 13 este guardia no cubre el modelo único (ADR-0009),
+        // OJO: en Laravel 13 este guardia no cubre el modelo único,
         // por eso el eager loading se hace siempre de forma explícita.
         Model::preventLazyLoading(! $this->app->isProduction());
 
-        // La caché del catálogo se invalida desde los observadores (ADR-0008).
+        // La caché del catálogo se invalida desde los observadores (ADR-0006).
         Product::observe(ProductObserver::class);
         Category::observe(CategoryObserver::class);
     }

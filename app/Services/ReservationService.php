@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 /**
  * Persiste las compras confirmadas como reservas.
  *
- * El carrito vive en la sesión (ADR-0004) y se vacía al confirmar; antes de
+ * El carrito vive en la sesión (ADR-0002) y se vacía al confirmar; antes de
  * eso tomamos una foto de sus líneas para que el historial del cliente no
  * dependa de cambios posteriores en el catálogo.
  */

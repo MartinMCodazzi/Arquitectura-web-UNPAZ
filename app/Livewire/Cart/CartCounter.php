@@ -8,10 +8,10 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 
 /**
- * Contador de carrito del header (ADR-0016, ADR-0017).
+ * Contador de carrito del header (ADR-0009, ADR-0010).
  *
  * Refleja cuántas unidades hay en la sesión mediante CartService (única
- * frontera de escritura del carrito, ADR-0004). Se refresca al recibir el
+ * frontera de escritura del carrito, ADR-0002). Se refresca al recibir el
  * evento `carrito-actualizado` que emiten las acciones del carrito.
  */
 class CartCounter extends Component

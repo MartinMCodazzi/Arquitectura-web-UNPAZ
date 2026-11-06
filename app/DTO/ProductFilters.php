@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 /**
  * Estado de los filtros del catálogo, normalizado a partir de la query string.
  *
- * Los precios viajan en la URL en céntimos (ver ADR-0006) y se normalizan a
+ * Los precios viajan en la URL en céntimos (ver ADR-0004) y se normalizan a
  * múltiplos de 100 (pesos enteros) para que el formulario y la URL nunca
  * discrepen. La categoría se referencia por *slug*.
  */

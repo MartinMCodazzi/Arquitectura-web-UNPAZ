@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 |
 | El catálogo se renderiza siempre en servidor y los filtros viajan en la
 | query string, de modo que cada combinación es indexable y cacheable
-| (ver ADR-0006). El detalle de producto se direcciona por *slug*.
+| (ver ADR-0004). El detalle de producto se direcciona por *slug*.
 |
 */
 
@@ -42,7 +42,7 @@ Route::get('/categorias/{category:slug}', function (Category $category) {
 | Carrito de compras
 |--------------------------------------------------------------------------
 |
-| El carrito vive en la sesión (ver ADR-0004) y se manipula con formularios
+| El carrito vive en la sesión (ver ADR-0002) y se manipula con formularios
 | HTML contra endpoints HTTP: el sitio público no depende de JavaScript.
 |
 */
